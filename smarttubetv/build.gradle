@@ -171,7 +171,10 @@ android {
         buildConfigField "boolean", "BENCHMARK", "false"
         // NEWTUBE(fdroid): -Pfdroid turns the in-app updater off - F-Droid delivers the updates, and
         // its inclusion policy forbids self-updates that aren't an explicit opt-in.
-        buildConfigField "boolean", "IN_APP_UPDATES", project.hasProperty('fdroid') ? "false" : "true"
+        // NEWTUBE(android-auto fork): always off. The built-in updater reads upstream NewTube's
+        // releases, so it would offer upstream NewTube (no Android Auto). Updates come from this
+        // fork's GitHub releases, installed the way Android Auto accepts (scripts/android-auto).
+        buildConfigField "boolean", "IN_APP_UPDATES", "false"
 
         // The content of Universal apk
         ndk {
@@ -308,6 +311,10 @@ android {
             // arch-"n" launcher mark (Catalan for "arch"). This ID is permanent once released;
             // do not couple it to the marketing name. See docs/gtm + the legal-risk memo.
             applicationId "io.github.aleixrodriala.arc"
+            // NEWTUBE(android-auto fork): its own package, so it installs next to upstream NewTube
+            // instead of clashing with it (debug builds without a keystore: ...arc.auto.debug).
+            applicationIdSuffix ".auto"
+            versionNameSuffix "-auto"
             minSdk = 24 // media3 1.10.x floor is 23; 24 = project-wide minimum
             targetSdk = project.ext.targetSdkVersion
             // NewTube versions independently of upstream SmartTube (defaultConfig carries the

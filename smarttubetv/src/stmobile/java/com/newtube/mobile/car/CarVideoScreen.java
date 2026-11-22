@@ -36,8 +36,8 @@ import java.util.Objects;
  * <p>A {@link NavigationTemplate} is used because the host only exposes a drawing surface to
  * navigation apps. The surface is filled with the live NewTube player (not a map): the activity
  * that owns the player hands it over through {@link CarDisplayBridge}. The template's action
- * strip provides play/pause, next, previous and a switch to turn passenger mode off; a tap or a
- * horizontal fling on the video toggles playback or seeks by ten seconds on hosts that forward
+ * strip provides previous, play/pause, next and Menu ({@link CarMenuScreen}). A tap on the video
+ * only brings the buttons back; a horizontal fling seeks by ten seconds on hosts that forward
  * surface gestures.</p>
  *
  * <p>Video is shown when the passenger mode switch is on ({@link CarModePrefs}). It is on by
@@ -335,7 +335,8 @@ public class CarVideoScreen extends Screen implements SurfaceCallback {
 
     @Override
     public void onClick(float x, float y) {
-        CarDisplayBridge.togglePlayPause();
+        // A tap on the video is how people bring the buttons back, so it must not also pause
+        // (it used to). Pause and play are on the Pause/Play button.
         invalidate();
     }
 

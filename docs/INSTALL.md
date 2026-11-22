@@ -83,12 +83,13 @@ update.
 
 ## Updating
 
-Download the new version and install it the same way. Your settings are kept, as long as you
-always use files from the same place (this page's releases).
+Download the new version from the
+[latest release](https://github.com/ruipereira1/newtube-android-auto/releases/latest) and install
+it the same way. It installs over the old one and keeps your settings. (The app does not update
+itself.)
 
-If Android says the app **cannot be updated** (or "conflicts with an existing package"), your
-current NewTube came from somewhere else: uninstall it first, then install the new one. This
-clears NewTube's settings and sign-in.
+Had an early test version of NewTube for Android Auto? It is a separate app: after installing
+this one, uninstall the old one so you don't have two NewTube icons.
 
 ## Other problems
 

@@ -150,8 +150,11 @@ public class CarVideoScreen extends Screen implements SurfaceCallback {
         if (mLastShowProblem) {
             // The player has nothing to show (an ended live stream, a video that failed): say so
             // instead of leaving the car screen black. Same template, so no screen change.
+            // A short title (the card is narrow) and the hint as a second line.
             template.setNavigationInfo(new MessageInfo.Builder(
-                    context.getString(R.string.car_video_unavailable)).build());
+                    context.getString(R.string.car_video_unavailable_title))
+                    .setText(context.getString(R.string.car_video_unavailable))
+                    .build());
         }
         // Previous and Next are icons only: with four labelled buttons Android Auto cuts the last
         // label ("Menu") down to "...".

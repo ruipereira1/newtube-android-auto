@@ -5,7 +5,8 @@
     <string name="car_enable_passenger_mode">Ligar modo passageiro</string>
     <string name="car_disable_passenger_mode">Desligar modo passageiro</string>
     <string name="car_start_video">Inicia um vídeo no telemóvel, ou toca em Menu para escolher um aqui.</string>
-    <string name="car_video_unavailable">Não foi possível reproduzir este vídeo. Toca em Menu para escolher outro.</string>
+    <string name="car_video_unavailable_title">Vídeo indisponível</string>
+    <string name="car_video_unavailable">Toca em Menu para escolher outro.</string>
     <string name="car_menu">Menu</string>
     <string name="car_menu_home">Início</string>
     <string name="car_menu_subscriptions">Subscrições</string>

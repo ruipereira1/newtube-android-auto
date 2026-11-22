@@ -982,6 +982,57 @@
 
                 </LinearLayout>
 
+                <!-- NEWTUBE(android-auto): shown while this video is on the car screen (see
+                     MobilePlaybackActivity.updateCarCard). Information only. -->
+                <LinearLayout
+                    android:id="@+id/mobile_watch_car_card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/mobile_watch_content_padding"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="@drawable/bg_watch_card"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="14dp"
+                    android:paddingVertical="12dp"
+                    android:visibility="gone"
+                    tools:visibility="visible">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_car"
+                        android:tint="@color/mobile_color_primary" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif-medium"
+                            android:text="@string/car_on_car_title"
+                            android:textColor="@color/mobile_color_on_surface"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="@string/car_on_car_summary"
+                            android:textColor="@color/mobile_color_on_surface_secondary"
+                            android:textSize="13sp" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
                 <!-- Comments entry: opens the comments panel over this page. Hidden until the loaded
                      metadata reports that comments are enabled (a non-null comments key).
                      Rendered as a rounded surface card, like YouTube's comments teaser. -->

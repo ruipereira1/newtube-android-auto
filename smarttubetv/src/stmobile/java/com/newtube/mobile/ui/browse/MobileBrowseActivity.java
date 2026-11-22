@@ -1102,9 +1102,39 @@ public class MobileBrowseActivity extends MobileActivity
             }
         }
 
+        // NEWTUBE(android-auto): the car switches, without going into Settings.
+        addYouGroupLabel(getString(R.string.car_you_group));
+        addYouSwitchRow(R.drawable.ic_car, getString(R.string.car_passenger_mode),
+                getString(R.string.car_passenger_mode_summary),
+                () -> com.newtube.mobile.car.CarModePrefs.isPassengerModeEnabled(this),
+                on -> com.newtube.mobile.car.CarModePrefs.setPassengerModeEnabled(this, on));
+        addYouSwitchRow(R.drawable.ic_player_queue, getString(R.string.car_lists_grid),
+                getString(R.string.car_lists_grid_summary),
+                () -> com.newtube.mobile.car.CarModePrefs.isGridEnabled(this),
+                on -> com.newtube.mobile.car.CarModePrefs.setGridEnabled(this, on));
+
         addYouDivider();
         addYouRow(R.drawable.ic_mobile_settings, getString(R.string.header_settings),
                 this::openSettings);
+    }
+
+    /** A You row with a switch; tapping anywhere on the row flips it. */
+    private void addYouSwitchRow(int iconRes, CharSequence title, CharSequence summary,
+            java.util.function.BooleanSupplier getter,
+            java.util.function.Consumer<Boolean> setter) {
+        View row = LayoutInflater.from(this).inflate(R.layout.item_mobile_you_switch_row,
+                mYouRows, false);
+        ((ImageView) row.findViewById(R.id.mobile_you_switch_icon)).setImageResource(iconRes);
+        ((TextView) row.findViewById(R.id.mobile_you_switch_title)).setText(title);
+        ((TextView) row.findViewById(R.id.mobile_you_switch_summary)).setText(summary);
+        android.widget.CompoundButton toggle = row.findViewById(R.id.mobile_you_switch);
+        toggle.setChecked(getter.getAsBoolean());
+        row.setOnClickListener(v -> {
+            boolean on = !toggle.isChecked();
+            setter.accept(on);
+            toggle.setChecked(on);
+        });
+        mYouRows.addView(row);
     }
 
     private void addYouSectionRow(BrowseSection section) {

@@ -481,6 +481,11 @@
     <string name="car_disable_passenger_mode">Turn off passenger mode</string>
     <string name="car_start_video">Start a video on your phone, or tap Menu to pick one here.</string>
     <string name="car_video_unavailable_title">Video unavailable</string>
+    <string name="car_you_group">Android Auto</string>
+    <string name="car_lists_grid">Car lists as a grid</string>
+    <string name="car_lists_grid_summary">Big thumbnails on the car screen</string>
+    <string name="car_on_car_title">Playing on the car screen</string>
+    <string name="car_on_car_summary">Passenger mode · up to 720p to save mobile data</string>
     <string name="car_live">Live</string>
     <string name="car_continue_watching">Continue watching</string>
     <string name="car_time_left">%s left</string>

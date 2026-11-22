@@ -283,6 +283,8 @@ public class MobilePlaybackActivity extends MobileActivity
     // Comments + live chat entries. Keys come from the loaded metadata. Comments open the panel
     // over the watch page (CommentsPanel); live chat opens its bottom sheet.
     private View mWatchCommentsEntry;
+    /** NEWTUBE(android-auto): the watch page's car card (see updateCarCard). */
+    @Nullable private View mWatchCarCard;
     private TextView mWatchCommentsCount;
     private CommentsPanel mCommentsPanel;
     /** NEWTUBE(comments-panel): best effort, a little after the video starts, so the panel opens full. */
@@ -754,6 +756,8 @@ public class MobilePlaybackActivity extends MobileActivity
         mQueueChevron = findViewById(R.id.mobile_watch_queue_chevron);
         mQueueList = findViewById(R.id.mobile_watch_queue_list);
         mWatchCommentsEntry = findViewById(R.id.mobile_watch_comments_entry);
+        mWatchCarCard = findViewById(R.id.mobile_watch_car_card);
+        updateCarCard(); // the car screen may have attached before this page was built
         mWatchCommentsCount = findViewById(R.id.mobile_watch_comments_count);
         mWatchChatEntry = findViewById(R.id.mobile_watch_chat_entry);
         mScrubChapterView = findViewById(R.id.mobile_player_scrub_chapter);
@@ -6309,6 +6313,7 @@ public class MobilePlaybackActivity extends MobileActivity
             return;
         }
         mCarSurface = surface;
+        updateCarCard();
         if (mPlayer != null) {
             // onStop may have dropped the video renderer for background audio; the car screen is
             // a visible video consumer, so bring it back before handing over the surface.
@@ -6320,12 +6325,20 @@ public class MobilePlaybackActivity extends MobileActivity
     /** The car screen went away: give the codec its session surface back. */
     void detachCarSurface() {
         mCarSurface = null;
+        updateCarCard();
         if (mPlayer != null) {
             mPlayer.setVideoSurface(mSessionSurface != null && mSessionSurface.isValid()
                     ? mSessionSurface : null);
         }
         if (mIsStopped && !mIsInPip && !mSuppressAutoPip && !isFinishing()) {
             setBackgroundAudioMode(true);
+        }
+    }
+
+    /** The "Playing on the car screen" card on the watch page, while the car shows this video. */
+    private void updateCarCard() {
+        if (mWatchCarCard != null) {
+            mWatchCarCard.setVisibility(isCarSurfaceActive() ? View.VISIBLE : View.GONE);
         }
     }
 

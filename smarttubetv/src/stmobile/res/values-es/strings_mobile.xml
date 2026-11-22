@@ -430,6 +430,11 @@
     <string name="car_disable_passenger_mode">Desactivar modo pasajero</string>
     <string name="car_start_video">Inicia un vídeo en el teléfono o toca Menú para elegir uno aquí.</string>
     <string name="car_video_unavailable_title">Vídeo no disponible</string>
+    <string name="car_you_group">Android Auto</string>
+    <string name="car_lists_grid">Listas del coche en cuadrícula</string>
+    <string name="car_lists_grid_summary">Miniaturas grandes en la pantalla del coche</string>
+    <string name="car_on_car_title">Reproduciendo en la pantalla del coche</string>
+    <string name="car_on_car_summary">Modo pasajero · hasta 720p para ahorrar datos móviles</string>
     <string name="car_live">En directo</string>
     <string name="car_continue_watching">Seguir viendo</string>
     <string name="car_time_left">quedan %s</string>

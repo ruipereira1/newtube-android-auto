@@ -300,7 +300,7 @@ adb -s DEVICE_SERIAL logcat -d | grep -a ...
   watching video while driving.
 - Sideload only. There is no Play Store release.
 
-## Keeping the video's shape (letterbox)
+## Full-screen video without stretching
 
 The host gives the app one surface the size of the whole car screen (800×400 on the desktop
 head unit, often wider in real cars). If the player drew straight into it, a 16:9 video would
@@ -309,15 +309,38 @@ be stretched to fit.
 `CarLetterbox` avoids that:
 
 1. The host surface becomes a private `VirtualDisplay`.
-2. A `Presentation` on that display shows a black background.
-3. Inside it, an `AspectRatioFrameLayout` holds a `SurfaceView`, sized to the video's aspect
-   ratio and centred in the part of the screen the host leaves visible
-   (`SurfaceCallback.onVisibleAreaChanged`, which matters in split-screen layouts).
+2. A `Presentation` on that display holds an `AspectRatioFrameLayout` in **zoom** mode with a
+   `SurfaceView` inside.
+3. The frame covers the full height of the screen and the width the host leaves to the app
+   (`SurfaceCallback.onVisibleAreaChanged`; in split-screen layouts that is only part of the
+   width). The host's buttons float over the video, so no room is reserved for them.
 4. The player draws into that `SurfaceView`.
 
-The aspect ratio is read from the player (`ExoPlayer.getVideoSize()`), so vertical videos work
-too. If a phone cannot create the virtual display, the screen falls back to the raw surface
-(the old, stretched behaviour) instead of failing.
+Zoom mode keeps the video's shape and covers the whole frame: what does not fit (a thin strip
+at the top and bottom of a 16:9 video on a wider screen) is cropped. The aspect ratio is read
+from the player (`ExoPlayer.getVideoSize()`), so vertical videos work too. If a phone cannot
+create the virtual display, the screen falls back to the raw surface (stretched) instead of
+failing.
+
+## The car menu
+
+The **Menu** button on the player screen pushes `CarMenuScreen`, a `ListTemplate` with the main
+NewTube sections: Home, Subscriptions, History, Playlists and Trending, plus the passenger-mode
+switch. Android Auto allows four buttons on the player screen, so Menu replaced the old
+"Turn off passenger mode" button, which now lives in the menu.
+
+Each section opens `CarVideoListScreen`:
+
+- It loads the section through the app's own `ContentService` (the same data as the phone).
+- It shows as many rows as the host allows (`ConstraintManager.CONTENT_LIMIT_TYPE_LIST`,
+  usually fewer while driving), then loads the thumbnails and redraws once.
+- Tapping a video calls `PlaybackPresenter.openVideo`, the same call the phone app uses, and
+  returns to the player screen; the car screen shows the new video.
+- Tapping a playlist or channel opens its videos in another list.
+
+Android Auto can start NewTube without opening any phone screen. The phone app normally sets up
+its YouTube services (account, language, proxy) on its first screen, so `NewTubeCarSession`
+does the same minimal setup when the car session starts; otherwise every list would fail.
 
 ## References
 

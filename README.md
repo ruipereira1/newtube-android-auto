@@ -32,7 +32,11 @@ surface and a small set of controls.
   surface of the player that is already running on the phone.
 - **Passenger mode on by default.** It can be turned off from the phone's Settings or from the
   car screen. When it is off, the car shows a message instead of video.
-- **Car controls:** previous, play/pause, next and a button to turn passenger mode off.
+- **Car controls:** previous, play/pause, next and **Menu**.
+- **Menu on the car screen:** Home, Subscriptions, History, Playlists and Trending, with
+  thumbnails. Tap a video to play it; tap a playlist or channel to see its videos. Passenger
+  mode is switched on and off at the bottom of the menu.
+- **Full-screen video:** the video fills the whole car screen without being stretched.
 - **Clean surface handoff:** the phone gets its own video surface back when the car screen stops
   or when the car app goes to the background.
 - **Strings** in English, Spanish, Portuguese (Brazil) and Portuguese (Portugal).
@@ -58,11 +62,12 @@ surface and a small set of controls.
 4. Open **Android Auto** on the phone, enable **Developer mode** (tap the version number ten
    times), then open **Developer settings** and enable **Unknown sources**.
 5. Connect the phone to the car and open **NewTube** from the Android Auto launcher.
-6. Start a video on the phone. It appears on the car screen.
-7. Use the car action strip for previous, play/pause, next, or to turn passenger mode off.
+6. Tap **Menu** on the car screen and pick a video, or start one on the phone. It appears on
+   the car screen.
+7. Use the buttons at the top of the car screen: previous, play/pause, next and Menu.
 
-To turn passenger mode back on, use the phone's **Settings → Android Auto passenger mode**, or
-the button on the car screen when it is off.
+Passenger mode is switched on and off at the bottom of the car **Menu**, or on the phone in
+**Settings → Android Auto passenger mode**.
 
 ## Build
 
@@ -143,8 +148,10 @@ The manifest declares:
 smarttubetv/src/stmobile/java/com/newtube/mobile/car/
   NewTubeCarAppService.java   CarAppService entry point
   NewTubeCarSession.java      one Android Auto session
-  CarVideoScreen.java         NavigationTemplate + SurfaceCallback
-  CarLetterbox.java           keeps the video's shape (black bars instead of stretching)
+  CarVideoScreen.java         NavigationTemplate + SurfaceCallback (the player screen)
+  CarLetterbox.java           fills the car screen with the video without stretching it
+  CarMenuScreen.java          the Menu: Home, Subscriptions, History, Playlists, Trending
+  CarVideoListScreen.java     a list of videos; tap to play, or open a playlist/channel
   CarModePrefs.java           passenger-mode preference (default on)
 
 smarttubetv/src/stmobile/java/com/newtube/mobile/ui/playback/
@@ -217,8 +224,10 @@ builds are signed with a local debug key, which can change between machines.
   not an independent player.
 - Some Android Auto hosts and some cars do not support third-party template apps with a
   surface. In that case the app can appear in the launcher but show a message or no video.
-- The video keeps its shape. On a screen with a different shape you will see black bars at
-  the sides or at the top and bottom; the picture is never stretched.
+- The video fills the car screen and keeps its shape. When the screen is wider than the
+  video, a thin strip at the top and bottom of the picture is cut off; it is never stretched.
+- The car menu shows as many rows as Android Auto allows. While driving, Android Auto may show
+  fewer rows or lock some lists.
 - No Play Store distribution. Sideload only.
 
 ## Credits

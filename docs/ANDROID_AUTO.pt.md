@@ -27,11 +27,12 @@ o carro recebe a imagem do vídeo que já está a passar no telemóvel e alguns 
 4. Abre o **Android Auto**, ativa o **modo de programador** (toca dez vezes na versão) e em
    **Definições de programador** ativa **Fontes desconhecidas**.
 5. Liga o telemóvel ao carro e abre o **NewTube** no launcher do Android Auto.
-6. Inicia um vídeo no telemóvel. Ele aparece no ecrã do carro.
-7. Usa os controlos do carro: anterior, play/pause, próximo e desligar o modo passageiro.
+6. Toca em **Menu** no ecrã do carro e escolhe um vídeo (Início, Subscrições, Histórico,
+   Playlists ou Em alta), ou inicia um vídeo no telemóvel. Ele aparece no ecrã do carro.
+7. Usa os botões no topo do ecrã do carro: anterior, play/pause, seguinte e Menu.
 
-Para voltar a ligar o modo passageiro, usa **Definições → Android Auto passenger mode** no
-telemóvel, ou o botão no ecrã do carro quando ele estiver desligado.
+O modo passageiro liga-se e desliga-se no fundo do **Menu** do carro, ou no telemóvel em
+**Definições → Android Auto passenger mode**.
 
 ## Modo passageiro
 
@@ -127,8 +128,9 @@ máquina.
   suportada. A Google ou o fabricante do carro podem restringir.
 - O carro é um segundo ecrã do leitor do telemóvel, não um leitor independente. O telemóvel tem
   de ficar ligado e o leitor tem de continuar vivo.
-- O tamanho e o formato do ecrã são do carro. A app não roda o vídeo, mas mantém a proporção:
-  em vez de esticar a imagem, mostra barras pretas nos lados ou em cima e em baixo.
+- O vídeo enche o ecrã do carro sem ficar esticado. Quando o ecrã é mais largo do que o vídeo,
+  corta-se uma faixa fina em cima e em baixo da imagem.
+- O menu do carro mostra as linhas que o Android Auto permitir; em andamento podem ser menos.
 - Alguns carros e versões do Android Auto não expõem uma surface a apps de terceiros.
 - O modo passageiro é uma preferência, não uma autorização legal. O condutor é responsável por
   não ver vídeo enquanto conduz.

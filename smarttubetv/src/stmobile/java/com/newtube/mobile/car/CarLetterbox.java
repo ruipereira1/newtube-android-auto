@@ -17,14 +17,15 @@ import androidx.annotation.Nullable;
 import androidx.media3.ui.AspectRatioFrameLayout;
 
 /**
- * Keeps the video's aspect ratio on the car display.
+ * Fills the car screen with the video without stretching it.
  *
  * <p>The host gives a raw {@link Surface} the size of the whole car screen. Handing it straight to
  * the decoder stretches a 16:9 video to the screen's shape (2:1 on the desktop head unit, wider on
  * many cars). Instead, the host surface backs a private {@link VirtualDisplay}; a
- * {@link Presentation} on that display draws a black background with a centred
- * {@link AspectRatioFrameLayout} holding a {@link SurfaceView}. The player renders into that
- * SurfaceView, so the video is letterboxed (pillarboxed on wide screens) and never distorted.</p>
+ * {@link Presentation} on that display holds an {@link AspectRatioFrameLayout} in zoom mode with
+ * a {@link SurfaceView} inside. The player renders into that SurfaceView, so the picture keeps
+ * its shape and covers the whole screen; whatever does not fit (a little at the top and bottom of
+ * a 16:9 video on a wide screen) is cropped. No black bars, no distortion.</p>
  */
 final class CarLetterbox {
     interface Listener {
@@ -59,12 +60,12 @@ final class CarLetterbox {
             FrameLayout root = new FrameLayout(mPresentation.getContext());
             root.setBackgroundColor(Color.BLACK);
 
-            // The part of the screen the host does not cover (split screen, cards). The video is
-            // centred in it rather than in the whole surface.
+            // The columns of the screen the host leaves to the app (split screen gives it only
+            // part of the width). The video fills that part, at full height.
             mVisibleBox = new FrameLayout(mPresentation.getContext());
 
             mFrame = new AspectRatioFrameLayout(mPresentation.getContext());
-            mFrame.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
+            mFrame.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_ZOOM);
             mFrame.setAspectRatio(16f / 9f);
 
             SurfaceView videoView = new SurfaceView(mPresentation.getContext());
@@ -114,17 +115,20 @@ final class CarLetterbox {
         mFrame.setAspectRatio(aspectRatio);
     }
 
-    /** Fits the video into this part of the surface (host coordinates); null = whole surface. */
+    /**
+     * Fills this part of the surface (host coordinates); null = whole surface. Only the width is
+     * used: the host's buttons float over the video and hide themselves, so the video keeps the
+     * full height instead of shrinking to make room for them.
+     */
     void setVisibleArea(@Nullable Rect area) {
         FrameLayout.LayoutParams params;
         if (area == null || area.isEmpty()) {
             params = new FrameLayout.LayoutParams(
                     FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
         } else {
-            params = new FrameLayout.LayoutParams(area.width(), area.height(),
-                    Gravity.TOP | Gravity.START);
+            params = new FrameLayout.LayoutParams(area.width(),
+                    FrameLayout.LayoutParams.MATCH_PARENT, Gravity.TOP | Gravity.START);
             params.leftMargin = area.left;
-            params.topMargin = area.top;
         }
         mVisibleBox.setLayoutParams(params);
     }

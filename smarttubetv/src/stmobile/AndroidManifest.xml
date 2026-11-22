@@ -49,6 +49,10 @@
          It is what lets a navigation-category app draw on the car display. -->
     <uses-permission android:name="androidx.car.app.ACCESS_SURFACE" />
 
+    <!-- Android Auto (projected): NavigationTemplate refuses to render unless the app declares
+         this normal permission. Without it the host rejects the screen when the app is opened. -->
+    <uses-permission android:name="androidx.car.app.NAVIGATION_TEMPLATES" />
+
     <!-- The in-app updater hands its APK straight to Android's installer (AppUpdates.systemInstaller):
          from Android 11 these queries make the installers visible, so apps that also open APK files
          do not turn the install into an "Open with" chooser. -->

@@ -54,8 +54,10 @@ import java.util.Objects;
 public class CarVideoScreen extends Screen implements SurfaceCallback {
     private static final long SEEK_STEP_MS = 10_000;
     private static final long REFRESH_MS = 1_000;
-    /** Two taps closer than this are a double tap. */
-    private static final long DOUBLE_TAP_MS = 700;
+    /** Zoom events closer than this belong to one gesture (a pinch sends many). */
+    private static final long DOUBLE_TAP_MS = 400;
+    /** Double taps on the same side closer than this add up (+10, +20, +30 s...). */
+    private static final long SEEK_CHAIN_MS = 2_000;
 
     private final Handler mHandler = new Handler(Looper.getMainLooper());
     /** The surface the player draws into: the letterboxed video view, or the raw host surface. */
@@ -74,6 +76,7 @@ public class CarVideoScreen extends Screen implements SurfaceCallback {
     /** Double tap to seek, as on YouTube: the side (-1 left, +1 right) and time of the last tap. */
     private int mLastTapSide;
     private long mLastTapMs;
+    private long mLastSeekMs;
     /** Seconds skipped by the current run of taps, shown in the toast ("+30 s"). */
     private int mTapSeekSeconds;
     private boolean mStarted;
@@ -187,7 +190,12 @@ public class CarVideoScreen extends Screen implements SurfaceCallback {
                 // buttons here).
                 .addAction(action(R.drawable.ic_player_queue,
                         context.getString(R.string.car_menu), this::openMenu));
-        return template.setActionStrip(strip.build()).build();
+        // Android Auto only forwards touches on the video (taps, double taps, flings) to apps
+        // whose map action strip has a Pan button.
+        return template
+                .setActionStrip(strip.build())
+                .setMapActionStrip(new ActionStrip.Builder().addAction(Action.PAN).build())
+                .build();
     }
 
     private Action menuAction(CarContext context) {
@@ -378,24 +386,39 @@ public class CarVideoScreen extends Screen implements SurfaceCallback {
 
     @Override
     public void onClick(float x, float y) {
-        // One tap only brings the buttons back (it must not pause or skip). Two quick taps on the
-        // right third of the video skip forward 10 s, on the left third back 10 s, and every
-        // further quick tap on the same side adds 10 s more - as on YouTube.
-        int side = tapSide(x);
-        long now = android.os.SystemClock.uptimeMillis();
-        boolean chained = side != 0 && side == mLastTapSide && now - mLastTapMs < DOUBLE_TAP_MS;
-        mLastTapSide = side;
-        mLastTapMs = now;
+        // A single tap only brings the buttons back (it must not pause or skip).
+        invalidate();
+    }
 
-        if (chained && CarDisplayBridge.getPlayer() != null) {
-            CarDisplayBridge.seekBy(side * SEEK_STEP_MS);
-            mTapSeekSeconds += (int) (SEEK_STEP_MS / 1000);
-            CarToast.makeText(getCarContext(),
-                    (side > 0 ? "+" : "\u2212") + mTapSeekSeconds + " s",
-                    CarToast.LENGTH_SHORT).show();
-        } else {
-            mTapSeekSeconds = 0;
+    /**
+     * Android Auto turns a double tap on the video into a zoom gesture ("double-tap -> onScale",
+     * the host picks the factor), so this is where a double tap arrives: on the right third it
+     * skips forward 10 s, on the left third back 10 s, as on YouTube. A two-finger pinch sends a
+     * stream of these; gestures closer than {@link #DOUBLE_TAP_MS} count as one, so a pinch
+     * skips once rather than dozens of times.
+     */
+    @Override
+    public void onScale(float focusX, float focusY, float scaleFactor) {
+        long now = android.os.SystemClock.uptimeMillis();
+        boolean sameGesture = now - mLastTapMs < DOUBLE_TAP_MS;
+        mLastTapMs = now;
+        if (sameGesture) {
+            return;
         }
+        int side = tapSide(focusX);
+        if (side == 0 || CarDisplayBridge.getPlayer() == null) {
+            return;
+        }
+        // Quick double taps in a row on the same side add up, as on YouTube.
+        boolean chain = side == mLastTapSide && now - mLastSeekMs < SEEK_CHAIN_MS;
+        mTapSeekSeconds = chain ? mTapSeekSeconds + (int) (SEEK_STEP_MS / 1000)
+                : (int) (SEEK_STEP_MS / 1000);
+        mLastTapSide = side;
+        mLastSeekMs = now;
+        CarDisplayBridge.seekBy(side * SEEK_STEP_MS);
+        CarToast.makeText(getCarContext(),
+                (side > 0 ? "+" : "\u2212") + mTapSeekSeconds + " s",
+                CarToast.LENGTH_SHORT).show();
         invalidate();
     }
 

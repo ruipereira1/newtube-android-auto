@@ -328,10 +328,14 @@
                 <action android:name="androidx.car.app.CarAppService" />
                 <category android:name="androidx.car.app.category.NAVIGATION" />
             </intent-filter>
-            <meta-data
-                android:name="androidx.car.app.minCarApiLevel"
-                android:value="1" />
         </service>
+
+        <!-- Car App Library reads this from the APPLICATION meta-data (AppInfo.retrieveMinCarAppApiLevel).
+             Declared inside the <service> it is invisible and the host shows
+             "unexpected error" with: Min API level not declared in manifest. -->
+        <meta-data
+            android:name="androidx.car.app.minCarApiLevel"
+            android:value="1" />
 
         <!-- Tells Android Auto that this app contributes a Car App Library (template) app. -->
         <meta-data

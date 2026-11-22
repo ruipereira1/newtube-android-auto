@@ -158,23 +158,25 @@ public class CarVideoScreen extends Screen implements SurfaceCallback {
         }
         // Previous and Next are icons only: with four labelled buttons Android Auto cuts the last
         // label ("Menu") down to "...".
-        return template
-                .setActionStrip(new ActionStrip.Builder()
-                        .addAction(action(R.drawable.ic_player_previous, null, this::previous))
-                        .addAction(action(playWhenReady
-                                        ? R.drawable.ic_player_pause
-                                        : R.drawable.ic_player_play,
-                                context.getString(playWhenReady
-                                        ? R.string.car_pause
-                                        : R.string.car_play),
-                                CarDisplayBridge::togglePlayPause))
-                        .addAction(action(R.drawable.ic_player_next, null, this::next))
-                        // Passenger mode is switched from inside the menu (Android Auto allows
-                        // four buttons here).
-                        .addAction(action(R.drawable.ic_player_queue,
-                                context.getString(R.string.car_menu), this::openMenu))
-                        .build())
-                .build();
+        ActionStrip.Builder strip = new ActionStrip.Builder()
+                .addAction(action(R.drawable.ic_player_previous, null, this::previous));
+        if (!mLastShowProblem) {
+            // Nothing to pause when the video is unavailable, and the message card needs the room
+            // for "Menu", which is what the message asks people to tap.
+            strip.addAction(action(playWhenReady
+                            ? R.drawable.ic_player_pause
+                            : R.drawable.ic_player_play,
+                    context.getString(playWhenReady
+                            ? R.string.car_pause
+                            : R.string.car_play),
+                    CarDisplayBridge::togglePlayPause));
+        }
+        strip.addAction(action(R.drawable.ic_player_next, null, this::next))
+                // Passenger mode is switched from inside the menu (Android Auto allows four
+                // buttons here).
+                .addAction(action(R.drawable.ic_player_queue,
+                        context.getString(R.string.car_menu), this::openMenu));
+        return template.setActionStrip(strip.build()).build();
     }
 
     private Action menuAction(CarContext context) {

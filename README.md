@@ -2,311 +2,236 @@
 
 <img src=".github/assets/icon.png" width="112" height="112" alt="NewTube icon">
 
-# NewTube
+# NewTube for Android Auto
 
-### Built on SmartTube. Made for your phone.
+### Passenger video on the car screen
 
-**SmartTube for phones**, unofficial: a YouTube client for Android phones and tablets, built on
-[SmartTube](https://github.com/yuliskov/SmartTube) by [@yuliskov](https://github.com/yuliskov).<br>
-Sign in with a code, keep it playing in the background, save videos for offline,
-and cast to SmartTube on your TV.
+An experimental fork of [NewTube](https://github.com/aleixrodriala/newtube) that adds an
+Android Auto (projected) screen. The phone keeps the player; the car receives the live video
+surface and a small set of controls.
 
-[![Latest release](https://img.shields.io/github/v/release/aleixrodriala/newtube?style=flat-square&label=release&color=1E2A78)](https://github.com/aleixrodriala/newtube/releases/latest)
-[![Android 7.0+](https://img.shields.io/badge/Android-7.0%2B-1E2A78?style=flat-square)](#download)
+[![Android 7.0+](https://img.shields.io/badge/Android-7.0%2B-1E2A78?style=flat-square)](#requirements)
+[![Android Auto](https://img.shields.io/badge/Android_Auto-projected-1E2A78?style=flat-square)](#install)
 [![License: MIT](https://img.shields.io/badge/license-MIT-1E2A78?style=flat-square)](LICENSE)
-[![Built on SmartTube](https://img.shields.io/badge/built_on-SmartTube-1E2A78?style=flat-square)](https://github.com/yuliskov/SmartTube)
-[![Discord](https://img.shields.io/badge/Discord-join-1E2A78?style=flat-square&logo=discord&logoColor=white)](https://discord.gg/xu3v6euSHq)
-
-**[Website](https://newtube.org/) · [Download](#download) · [Features](#features) · [How sign-in works](#how-sign-in-works) · [FAQ](#faq) · [Translate](#translate) · [Credits](#built-on-smarttube)**
-
-<br>
-
-<img src=".github/assets/hero.webp" width="100%" alt="Three NewTube screens: the sign-in code, the watch page playing Sintel, and the Downloads tab">
+[![Status: experimental](https://img.shields.io/badge/status-experimental-orange?style=flat-square)](#status-and-limitations)
 
 </div>
 
-> [!NOTE]
-> **NewTube is SmartTube's work underneath.** The engine that talks to YouTube, the account
-> sign-in and the SponsorBlock, DeArrow and Return YouTube Dislike integrations all come from
-> [SmartTube](https://github.com/yuliskov/SmartTube). NewTube adds a touch interface, its own
-> player and offline saving. It is an independent project, not endorsed by SmartTube's developer.
-> NewTube takes no donations: if you find it useful, [support SmartTube](https://github.com/yuliskov/SmartTube#donation).
+> [!WARNING]
+> **Passenger use only.** The driver must not watch video while driving. This is an
+> experimental, sideloaded app. It is not affiliated with Google, Android Auto, YouTube,
+> NewTube or SmartTube. Use it at your own risk and follow the law where you drive.
 
-## Features
+> **Português:** este fork mostra o vídeo do NewTube no ecrã do Android Auto para o passageiro.
+> O modo passageiro vem ligado por omissão. O condutor não deve ver vídeo. Instruções em
+> português: [docs/ANDROID_AUTO.pt.md](docs/ANDROID_AUTO.pt.md).
 
-<table>
-<tr>
-<td width="50%" valign="top">
+## What this fork adds
 
-#### Your account, in seconds
-Sign in once with a code and your subscriptions, history, playlists, Watch later and
-recommendations load from your account. It doesn't need microG, GmsCore, root or a patched app.
-Signing in is optional; signed out, YouTube still personalises Home from what you watch.
+- **Android Auto screen** with the live NewTube player, not a second player. The car gets the
+  surface of the player that is already running on the phone.
+- **Passenger mode on by default.** It can be turned off from the phone's Settings or from the
+  car screen. When it is off, the car shows a message instead of video.
+- **Car controls:** previous, play/pause, next and a button to turn passenger mode off.
+- **Clean surface handoff:** the phone gets its own video surface back when the car screen stops
+  or when the car app goes to the background.
+- **Strings** in English, Spanish, Portuguese (Brazil) and Portuguese (Portugal).
+- **Robolectric test** for the passenger-mode preference.
+- **Explicit Car App Library permissions:** `androidx.car.app.ACCESS_SURFACE` and
+  `androidx.car.app.NAVIGATION_TEMPLATES`.
 
-</td>
-<td width="50%" valign="top">
+## Requirements
 
-#### Keeps playing
-Background playback with the screen off, picture-in-picture, and a mini-player you can
-drag down while you keep browsing. Lock-screen and headset controls work too.
+- Android phone with **Android 7.0+** (API 24).
+- The **Android Auto** app installed on the phone.
+- A car or head unit with **Android Auto projected mode**. Tested on a Toyota Yaris 2025.
+- A USB cable (or wireless Android Auto if the car and phone support it).
+- Sideloaded APK. This fork is not distributed on Google Play.
+- To build: **JDK 17+** (tested with JDK 21), **Android SDK 37**, and the git submodules.
 
-</td>
-</tr>
-<tr>
-<td valign="top">
+## Install
 
-#### Save for offline
-Pick a quality up to 1080p, or keep only the audio. Saved videos play in the same player
-with no connection, and they show up in your gallery.
+1. Build the APK (see [Build](#build)) or download the debug artifact from the
+   [Actions](https://github.com/ruipereira1/newtube-android-auto/actions/workflows/android-auto.yml) tab.
+2. On the phone, allow installs from unknown sources for the app you use to open the APK.
+3. Install the APK.
+4. Open **Android Auto** on the phone, enable **Developer mode** (tap the version number ten
+   times), then open **Developer settings** and enable **Unknown sources**.
+5. Connect the phone to the car and open **NewTube** from the Android Auto launcher.
+6. Start a video on the phone. It appears on the car screen.
+7. Use the car action strip for previous, play/pause, next, or to turn passenger mode off.
 
-</td>
-<td valign="top">
+To turn passenger mode back on, use the phone's **Settings → Android Auto passenger mode**, or
+the button on the car screen when it is off.
 
-#### Measured speed
-The first screen appears in about 0.24 s, and a related video shows its first frame about half
-a second after you tap it ([Pixel 9 medians](#how-fast)). The interface is plain Material Design,
-in light or dark.
+## Build
 
-</td>
-</tr>
-<tr>
-<td valign="top">
+```bash
+git clone --recurse-submodules https://github.com/ruipereira1/newtube-android-auto.git
+cd newtube-android-auto
+echo "sdk.dir=/path/to/Android/Sdk" > local.properties
+./gradlew :smarttubetv:assembleStmobileDebug
+```
 
-#### Less noise
-**SponsorBlock** skips sponsor segments, **DeArrow** swaps clickbait titles and thumbnails,
-and **Return YouTube Dislike** shows estimated dislike counts. There are no Shorts.
+If the submodules are not present:
 
-</td>
-<td valign="top">
+```bash
+git submodule update --init --recursive
+```
 
-#### Works with SmartTube on your TV
-Pair with SmartTube on the TV using its Remote control code. You can also play straight to a
-Chromecast from the phone (no live streams or subtitles in that mode), or use the TV's own
-YouTube app.
+The debug APK is written to:
 
-</td>
-</tr>
-</table>
+```text
+smarttubetv/build/outputs/apk/stmobile/debug/
+smarttubetv/build/outputs/renamed_apks/stmobileDebug/
+```
 
-<details>
-<summary><b>Everything else</b></summary>
+The app runs on API 24 and later. The build is verified with JDK 21 and Android SDK 37; JDK 17
+is the minimum supported by the project.
 
-- Up to 4K where the video and the phone allow (1080p by default), with codec choice
-- Subtitles, including auto-translated tracks, and caption style and size
-- Playback speed from 0.25x to 2x, plus finer steps
-- Playlists: Play all, Shuffle, Save to playlist, New playlist, a queue with "Playing from…"
-- Several accounts, with a switcher, or none at all
-- Picture-in-picture on Android 8 and later
-- Swipe gestures: up into fullscreen, down out of it, brightness and volume on the sides, sideways to seek
-- Settings in short pages, with a search
-- Read and write comments, live chat; chapters and dubbed audio tracks
-- Playback that waits out tunnels and dead zones and resumes where it stopped
-- English and Spanish
+## Tests
 
-</details>
+```bash
+./gradlew :smarttubetv:testStmobileDebugUnitTest \
+  --tests 'com.newtube.mobile.car.CarModePrefsTest'
+```
 
-<p align="center">
-<img src=".github/assets/demo.webp" width="23%" alt="NewTube in motion: Blender Studio's channel, a video with chapters, the comments panel, a seek and the mini-player">
-<img src=".github/assets/screens/comments.webp" width="23%" alt="Comments panel under the video">
-<img src=".github/assets/screens/mini.webp" width="23%" alt="Mini-player over a channel page">
-<img src=".github/assets/screens/light.webp" width="23%" alt="The watch page in the light theme">
-</p>
+## How it works
 
-## Download
+The car app and the phone app run in the same process. The phone's
+`MobilePlaybackActivity` owns the only `ExoPlayer`; the car app does not create a second one.
 
-<a href="https://github.com/aleixrodriala/newtube/releases/latest"><img src="images/badge_github.png" height="64" alt="Get it on GitHub"></a>
+```text
+Android Auto host
+      │  SurfaceCallback (surface)
+      ▼
+CarVideoScreen ──────► CarDisplayBridge ◄────── MobilePlaybackActivity
+  NavigationTemplate        weak ref + surface        ExoPlayer
+  ActionStrip                attach / detach          phone surface
+```
 
-| Your device | File |
-|:--|:--|
-| Almost every phone from the last ~8 years | `NewTube_<version>_arm64-v8a.apk` |
-| Older 32-bit phones | `NewTube_<version>_armeabi-v7a.apk` |
-| Not sure (any ARM phone) | `NewTube_<version>_universal.apk` (bigger) |
-| Older x86 devices and emulators | `NewTube_<version>_x86.apk` |
+- `NewTubeCarAppService` is the `CarAppService`. It is declared with the `NAVIGATION`
+  category because that is the only Car App Library category that receives a drawing surface.
+- `NewTubeCarSession` creates `CarVideoScreen`.
+- `CarVideoScreen` implements `SurfaceCallback`. It hands the host surface to
+  `CarDisplayBridge` and builds a `NavigationTemplate` with an `ActionStrip`. When there is no
+  player or passenger mode is off, it returns a `MessageTemplate`.
+- `CarDisplayBridge` holds a weak reference to the activity and the current car surface. When
+  the activity is created after the car screen, it attaches the surface immediately. When the
+  car screen stops, the phone gets its own surface back.
+- `CarModePrefs` stores the passenger-mode switch. It is on by default.
+- `MobilePlaybackActivity` uses the car surface instead of the phone surface while the car
+  screen is active, and restores the phone surface when it is not.
 
-- **Requires Android 7.0 or newer.** NewTube has its own package name
-  (`io.github.aleixrodriala.arc`), so it installs next to SmartTube or the YouTube app.
-- **Updates:** with [Obtainium](https://obtainium.imranr.dev), choose *Add app* and paste
-  `https://github.com/aleixrodriala/newtube`, or install a newer APK over the old one. NewTube
-  also checks for new versions itself and offers them in the app.
-- **Verify what you install.** Every APK is signed with the same key. Its certificate SHA-256 is
-  `2e:f9:9d:76:ed:fa:d9:88:ad:17:cd:ee:8b:a1:8c:63:4e:23:0f:e1:e3:cb:1f:dc:6c:db:02:49:37:0a:36:c9`.
-  Check it with `apksigner verify --print-certs <file>.apk`. Each release also lists a SHA-256 for every file.
-  From 1.10.3 the APKs are built by GitHub Actions from the tagged source; check that with
-  `gh attestation verify <file>.apk -R aleixrodriala/newtube`.
-  NewTube's key is not SmartTube's, so neither app can update the other.
-- **Distributed on GitHub**, not on Google Play.
+The manifest declares:
 
-## How sign-in works
+- `androidx.car.app.ACCESS_SURFACE` — required to receive a surface from the host.
+- `androidx.car.app.NAVIGATION_TEMPLATES` — required by `NavigationTemplate`. Without it the
+  host rejects the screen when the app is opened.
+- `com.newtube.mobile.car.NewTubeCarAppService` with the
+  `androidx.car.app.CarAppService` action, the `androidx.car.app.category.NAVIGATION`
+  category and `minCarApiLevel=1`.
+- `com.google.android.gms.car.application` metadata pointing to
+  `res/xml/automotive_app_desc.xml`, which declares `<uses name="template" />`.
 
-1. Open the **You** tab, tap the account row, then **Sign in**. NewTube shows a short code.
-2. Tap **Continue with Google**. Google's own page opens: pick your account and allow access.
-   It may mention a TV, because NewTube signs in the same way a TV does.
-3. Come back. Sign-in finishes by itself.
+## Code map
 
-Your password is only ever typed into Google's page, never into NewTube. The login token is
-stored on your phone and never sent to the developer. You can revoke it at any time at
-[myaccount.google.com/security](https://myaccount.google.com/security), under
-*Your connections to third-party apps & services*.
+```text
+smarttubetv/src/stmobile/java/com/newtube/mobile/car/
+  NewTubeCarAppService.java   CarAppService entry point
+  NewTubeCarSession.java      one Android Auto session
+  CarVideoScreen.java         NavigationTemplate + SurfaceCallback
+  CarModePrefs.java           passenger-mode preference (default on)
 
-## How fast
+smarttubetv/src/stmobile/java/com/newtube/mobile/ui/playback/
+  CarDisplayBridge.java       weak activity reference + car surface handoff
+  MobilePlaybackActivity.java player owner; switches between phone and car surface
 
-Medians measured on a Pixel 9 on 25 and 26 September 2026, with release builds of the code that
-became 1.10.1, 2 to 8 runs per cell: small samples, one phone, one carrier, and the mobile-data runs
-were on different days. Later versions haven't been re-timed this way, and 1.12.0 changed how the
-app opens (Home shows loading placeholders first). The method and the full table are in
-[STATUS.md](docs/mobile-port/STATUS.md).
+smarttubetv/src/stmobile/AndroidManifest.xml
+  Car permissions, CarAppService and automotive metadata
 
-| | Wi-Fi | Mobile data |
-|:--|--:|--:|
-| Open the app → first screen | 0.24 s | 0.24 s |
-| Open the app → Home fully painted | 1.35 s | 1.56 s |
-| Tap a related video → first frame | 0.50 s | 0.53 s |
-| Tap a related video → picture visible | 0.66 s | 0.73 s |
-| Reopen a half-watched video → picture | 0.37 s | – |
-| Tap a shared link → first frame | 0.66 s | 0.84 s |
+smarttubetv/src/stmobile/res/xml/automotive_app_desc.xml
+  <uses name="template" />
 
-## NewTube and SmartTube
+smarttubetv/src/stmobile/res/values*/strings_mobile.xml
+  car_* strings (EN, ES, PT-BR, PT-PT)
 
-|  | SmartTube | NewTube |
-|:--|:--|:--|
-| Made for | Android TV and TV boxes | Phones and tablets |
-| Controls | TV remote (D-pad) | Touch and gestures |
-| Interface | Leanback | Material Design |
-| Engine | MediaServiceCore + SharedModules | Forks of the same modules |
-| Player | ExoPlayer | androidx Media3 |
-| Offline saving | No | Yes |
-| License | MIT | MIT |
+smarttubetv/src/testStmobile/java/com/newtube/mobile/car/CarModePrefsTest.java
+  Robolectric test for the passenger-mode preference
+```
 
-Have an Android TV? Get [SmartTube](https://github.com/yuliskov/SmartTube). It's excellent,
-and NewTube can cast to it.
+## Troubleshooting
 
-## FAQ
+### NewTube does not appear in the Android Auto launcher
 
-<details>
-<summary><b>Can SmartTube be installed on phones?</b></summary>
+- Enable **Developer mode** in Android Auto and then **Unknown sources** in Developer settings.
+- Make sure the APK is installed for the same user profile that is connected to the car.
+- Restart the Android Auto app and reconnect the USB cable.
+- Use a data-capable USB cable, not a charge-only cable.
+- Confirm the car supports Android Auto projected mode.
 
-SmartTube is made for Android TV and TV boxes, and its README says "There will not be a phone
-version." NewTube is an unofficial phone client built on SmartTube's engine, with a touch interface,
-its own player and offline saving. It is an independent project, not endorsed by SmartTube's developer.
+### The app opens with an error
 
-</details>
+- Confirm the installed APK contains both `androidx.car.app.ACCESS_SURFACE` and
+  `androidx.car.app.NAVIGATION_TEMPLATES`.
+- Update Android Auto on the phone.
+- Capture the crash:
 
-<details>
-<summary><b>Do I need microG, GmsCore, root or ReVanced?</b></summary>
+```bash
+adb logcat -c
+# open the app in Android Auto and reproduce the error
+adb logcat -d | grep -a -iE "AndroidRuntime|app.smarttube|newtube|carapp|FATAL|Exception"
+```
 
-No. NewTube isn't a patched YouTube app. It signs in with a code the way a TV does, so it
-doesn't need Google Play Services or a stand-in for them.
+### The phone plays video but the car screen stays empty
 
-</details>
+- Start the video on the phone first; the car screen follows the live player.
+- Check that passenger mode is on.
+- Some cars and Android Auto versions do not expose a surface to third-party template apps.
+- Tap the car screen once; some hosts only deliver surface gestures after a tap.
 
-<details>
-<summary><b>How is it different from NewPipe, LibreTube or ReVanced?</b></summary>
+### The car controls do nothing
 
-They're all good apps, and which one fits depends on what you want. NewPipe and LibreTube
-don't sign in to a Google account; they keep subscriptions on your phone or on a Piped server.
-ReVanced patches the official app and needs GmsCore unless you're rooted.
-NewTube is built on SmartTube, so it uses your real account without any of that.
+- The action strip only exists while a player is active.
+- Some hosts do not forward taps or flings on the surface; use the action strip.
+- If the host hides the action strip while driving, use the phone for that action.
 
-</details>
+### The APK will not install
 
-<details>
-<summary><b>Is there another SmartTube-based phone app?</b></summary>
+If Android reports a signature mismatch, uninstall the previous NewTube build first. Debug
+builds are signed with a local debug key, which can change between machines.
 
-Yes. [SmarterTube](https://github.com/CodeSculptor/SmarterTube) is another independent phone
-fork of SmartTube, worth comparing. The two are separate projects. One difference today
-(September 2026): NewTube can save videos for offline.
+## Status and limitations
 
-</details>
+- Experimental. Tested with a Toyota Yaris 2025 in Android Auto projected mode.
+- This is not a navigation app. `NavigationTemplate` is used only because it is the template
+  that receives a surface; Google or a car maker may restrict this use.
+- Video while the car is moving is for passengers only. The driver must not watch it.
+- The phone must stay connected and keep the player alive. The car screen is a second display,
+  not an independent player.
+- Some Android Auto hosts and some cars do not support third-party template apps with a
+  surface. In that case the app can appear in the launcher but show a message or no video.
+- No Play Store distribution. Sideload only.
 
-<details>
-<summary><b>Is it safe? How do I know the APK is really NewTube?</b></summary>
+## Credits
 
-Up to 1.10.2 the APKs were built on the maintainer's computer. From 1.10.3 they're built by
-GitHub Actions from the tagged source, and each file has a build attestation you can check with
-`gh attestation verify <file>.apk -R aleixrodriala/newtube`. The builds aren't reproducible yet. Check the signing
-certificate against the fingerprint under [Download](#download), and each file against the
-SHA-256 in its release notes. Every release is tagged, so you can read the exact source.
-The app has no analytics, no crash reporting and no ad SDKs, and the developer receives nothing.
-It talks to YouTube (which sees what you watch, as it would anywhere), to the community services
-you can switch off (SponsorBlock, DeArrow, Return YouTube Dislike), and to GitHub. Details are
-in [PRIVACY.md](PRIVACY.md). Every check, with links, is also on the website under
-[Trust and verification](https://newtube.org/#trust).
+This fork builds on the work of:
 
-</details>
+- [NewTube](https://github.com/aleixrodriala/newtube) by
+  [@aleixrodriala](https://github.com/aleixrodriala) — the phone UI, player and offline support.
+- [SmartTube](https://github.com/yuliskov/SmartTube) by
+  [@yuliskov](https://github.com/yuliskov) and contributors — the engine, accounts and
+  integrations.
+- [androidx Media3](https://developer.android.com/media/media3) — playback.
+- [SponsorBlock](https://sponsor.ajay.app), [DeArrow](https://dearrow.ajay.app) and
+  [Return YouTube Dislike](https://returnyoutubedislike.com) — the optional integrations.
 
-<details>
-<summary><b>Was this made with AI?</b></summary>
-
-Yes, in large part. NewTube is one person's project, and most of its own code (the phone
-interface, the player and the network work) was written with AI coding assistants (Claude and
-Codex); the commit trailers say so. The maintainer directs and reviews that work and uses the app
-daily. Each [release record](docs/releases/) lists what was checked on a real phone, what only in
-automated tests, and what is still open. The engine underneath is SmartTube's, written by
-@yuliskov and its contributors over several years.
-
-</details>
-
-<details>
-<summary><b>Why no donations?</b></summary>
-
-NewTube doesn't take donations. SmartTube did the heavy lifting, so if you want to give
-something back, [support SmartTube](https://github.com/yuliskov/SmartTube#donation).
-
-</details>
-
-<details>
-<summary><b>A video won't play. What now?</b></summary>
-
-YouTube sometimes refuses a video or an account. NewTube retries through other routes, but not
-every video comes back. If one keeps failing, [open an issue](https://github.com/aleixrodriala/newtube/issues/new/choose)
-with the video link and your NewTube version.
-
-</details>
-
-## Built on SmartTube
-
-| Project | By | Used for |
-|:--|:--|:--|
-| [SmartTube](https://github.com/yuliskov/SmartTube) | [@yuliskov](https://github.com/yuliskov) and contributors | The engine, accounts and integrations: everything under the hood |
-| [SponsorBlock](https://sponsor.ajay.app) · [DeArrow](https://dearrow.ajay.app) | Ajay Ramachandran and contributors | Segment and title data (CC BY-NC-SA 4.0) |
-| [Return YouTube Dislike](https://returnyoutubedislike.com) | RYD contributors | Dislike counts |
-| [androidx Media3](https://developer.android.com/media/media3) | Google (Apache-2.0) | Playback |
-
+The upstream NewTube README is preserved at [README.upstream.md](README.upstream.md). SmartTube's
+original README is at [docs/UPSTREAM_README_SmartTube.md](docs/UPSTREAM_README_SmartTube.md).
 Full notices are in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
-SmartTube's original README is kept at [docs/UPSTREAM_README_SmartTube.md](docs/UPSTREAM_README_SmartTube.md).
-
-## Translate
-
-NewTube's phone screens are in English and Spanish so far. You can translate them in your browser
-on **[Weblate](https://hosted.weblate.org/projects/newtube/)**, with no coding and no GitHub
-account needed. The
-settings and messages inherited from SmartTube already exist in about 45 languages and just need
-their gaps filled. Weblate sends the translations here as pull requests, and each one ships in the
-next release. How it works and what to translate first: [TRANSLATING.md](TRANSLATING.md).
-
-## Building and contributing
-
-New releases, help and ideas are on the [NewTube Discord](https://discord.gg/xu3v6euSHq).
-Issues and pull requests are welcome. Build instructions are in [docs/BUILDING.md](docs/BUILDING.md).
-The [changelog](CHANGELOG.md) covers every release, with a
-[Spanish edition](CHANGELOG.es.md) for the testers.
 
 ## License
 
-[MIT](LICENSE), the same as SmartTube. © yuliskov (SmartTube) and NewTube contributors.
-
-## Star history
-
-<a href="https://www.star-history.com/#aleixrodriala/newtube&Date">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=aleixrodriala/newtube&type=Date&theme=dark">
-    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=aleixrodriala/newtube&type=Date">
-    <img alt="NewTube's GitHub stars over time" src="https://api.star-history.com/svg?repos=aleixrodriala/newtube&type=Date" width="100%">
-  </picture>
-</a>
-
----
-
-*NewTube is an independent, unofficial project. It is not affiliated with, funded, authorized or
-endorsed by Google LLC, YouTube, or SmartTube's developer, and it hosts no content. Save only what
-the law and the platform's terms allow you to. YouTube, Android and Google are trademarks of Google LLC.*
+[MIT](LICENSE), the same as NewTube and SmartTube. © yuliskov (SmartTube) and NewTube
+contributors. Android Auto changes in this fork are by
+[@ruipereira1](https://github.com/ruipereira1).

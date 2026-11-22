@@ -60,6 +60,12 @@ this once.
 | **Pause / Play** | Pauses or plays the video |
 | **Menu** | Home, Subscriptions, History, Playlists, Trending and the passenger-mode switch |
 
+**On the video itself:**
+
+- **Tap once** to show the buttons. They hide again after about 10 seconds.
+- **Double tap on the right side** to skip forward 10 seconds, **on the left side** to go back
+  10 seconds. Keep double tapping to skip more (+20, +30 seconds...).
+
 *The pictures show the app in Portuguese; it follows your phone's language.*
 
 ## NewTube does not appear in the car?

@@ -61,6 +61,12 @@ fazes isto uma vez.
 | **Pausar / Reproduzir** | Pausa ou continua o vídeo |
 | **Menu** | Início, Subscrições, Histórico, Playlists, Em alta e o interruptor do modo passageiro |
 
+**No próprio vídeo:**
+
+- **Um toque** mostra os botões. Escondem-se outra vez ao fim de uns 10 segundos.
+- **Toque duplo do lado direito** avança 10 segundos; **do lado esquerdo** recua 10 segundos.
+  Continua a tocar duas vezes para saltar mais (+20, +30 segundos...).
+
 ## O NewTube não aparece no carro?
 
 Em muitos telemóveis, o Android Auto só mostra apps que pareçam vir da Google Play, mesmo

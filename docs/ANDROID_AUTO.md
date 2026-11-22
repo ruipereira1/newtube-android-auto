@@ -133,11 +133,30 @@ The `NavigationTemplate` action strip contains four actions:
 | Previous | `ic_player_previous` | Plays the previous item; if there is no queue, seeks back 10 seconds. |
 | Play / Pause | `ic_player_play` / `ic_player_pause` | Toggles playback. The icon and title follow `playWhenReady`. |
 | Next | `ic_player_next` | Plays the next item; if there is no queue, seeks forward 10 seconds. |
-| Turn off passenger mode | `ic_mobile_settings` | Sets the preference to off and invalidates the template. |
+| Menu | `ic_player_queue` | Opens `CarMenuScreen`: Home, Subscriptions, History, Playlists, Trending and the passenger-mode toggle. |
 
-`SurfaceCallback.onClick` toggles play/pause, and `onFling` seeks by 10 seconds on a horizontal
-fling. **These gestures are best effort:** some hosts and cars do not forward them. The action
-strip is the reliable path.
+Previous and Next have no title (icon only): with four titled actions the host cuts the last
+title ("Menu") down to "...". While the "video unavailable" card is shown, Play / Pause is left
+out so "Menu" keeps its label.
+
+The host hides the action strip after about 10 seconds without interaction and shows it again
+on a tap. That timeout belongs to Android Auto; apps cannot keep the strip on screen.
+
+### Gestures on the video
+
+The host only forwards surface gestures to apps whose **map action strip contains
+`Action.PAN`**, so the template sets one (the host does not draw it as a visible button here).
+
+| Gesture | Callback | What it does |
+|:--|:--|:--|
+| Tap | `onClick` | Only brings the action strip back. It never pauses or seeks. |
+| Double tap on the right / left third | `onScale` | Seeks forward / back 10 seconds and shows a toast ("+10 s"). Double taps on the same side within 2 seconds add up (+20 s, +30 s...). |
+| Horizontal fling | `onFling` | Seeks 10 seconds in the fling direction. |
+
+The host turns a double tap into a zoom gesture, which is why it arrives as `onScale` and not as
+two `onClick`s. A pinch sends a stream of `onScale` events; events closer than 400 ms count as
+one gesture, so a pinch seeks once. Gestures need Car App API level 5 or later; on older hosts
+the action strip is the only way to control playback.
 
 ## Manifest and permissions
 

@@ -47,7 +47,9 @@ phone's language). Video: "Big Buck Bunny" © Blender Foundation, CC BY 3.0.*
   surface of the player that is already running on the phone.
 - **Passenger mode on by default.** It can be turned off from the phone's Settings or from the
   car screen. When it is off, the car shows a message instead of video.
-- **Car controls:** previous, play/pause, next and **Menu**.
+- **Car controls:** previous, play/pause, next and **Menu**. **Double tap** the right or left
+  side of the video to skip 10 seconds forward or back, as on YouTube; a single tap only shows
+  the buttons.
 - **Menu on the car screen:** Home, Subscriptions, History, Playlists and Trending, with
   thumbnails. Tap a video to play it; tap a playlist or channel to see its videos. Passenger
   mode is switched on and off at the bottom of the menu.

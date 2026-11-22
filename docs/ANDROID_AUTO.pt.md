@@ -113,6 +113,7 @@ adb logcat -d | grep -a -iE "AndroidRuntime|app.smarttube|newtube|carapp|FATAL|E
 ### Os controlos do carro não fazem nada
 
 - A barra de ações só existe quando há um leitor ativo.
+- Um toque só mostra os botões; o toque duplo à direita ou à esquerda avança ou recua 10 s.
 - Alguns carros não encaminham toques nem gestos; usa os botões da barra.
 - Se o carro esconder a barra em andamento, usa o telemóvel para essa ação.
 

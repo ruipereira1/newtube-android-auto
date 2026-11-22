@@ -14,6 +14,7 @@ import android.content.SharedPreferences;
 public final class CarModePrefs {
     private static final String PREFS = "newtube_car";
     private static final String KEY_PASSENGER_MODE = "passenger_mode";
+    private static final String KEY_GRID = "lists_as_grid";
 
     private CarModePrefs() {
     }
@@ -24,6 +25,15 @@ public final class CarModePrefs {
 
     public static void setPassengerModeEnabled(Context context, boolean enabled) {
         prefs(context).edit().putBoolean(KEY_PASSENGER_MODE, enabled).apply();
+    }
+
+    /** Car video lists as a grid of big thumbnails instead of a list (off by default). */
+    public static boolean isGridEnabled(Context context) {
+        return prefs(context).getBoolean(KEY_GRID, false);
+    }
+
+    public static void setGridEnabled(Context context, boolean enabled) {
+        prefs(context).edit().putBoolean(KEY_GRID, enabled).apply();
     }
 
     private static SharedPreferences prefs(Context context) {

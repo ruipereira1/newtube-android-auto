@@ -29,6 +29,7 @@ import androidx.media3.exoplayer.ExoPlayer;
 
 import com.liskovsoft.smartyoutubetv2.common.app.models.data.Video;
 import com.liskovsoft.smartyoutubetv2.tv.R;
+import com.newtube.mobile.player.CarVideoCap;
 import com.newtube.mobile.ui.playback.CarDisplayBridge;
 
 import java.util.Objects;
@@ -73,6 +74,7 @@ public class CarVideoScreen extends Screen implements SurfaceCallback {
     private Rect mVisibleArea;
     /** Width of the host surface, to tell a tap on the left of the video from one on the right. */
     private int mSurfaceWidth;
+    private int mSurfaceHeight;
     /** Double tap to seek, as on YouTube: the side (-1 left, +1 right) and time of the last tap. */
     private int mLastTapSide;
     private long mLastTapMs;
@@ -334,6 +336,7 @@ public class CarVideoScreen extends Screen implements SurfaceCallback {
         }
         mHostSurface = surface;
         mSurfaceWidth = surfaceContainer.getWidth();
+        mSurfaceHeight = surfaceContainer.getHeight();
         try {
             mLetterbox = new CarLetterbox(getCarContext(), surface,
                     surfaceContainer.getWidth(), surfaceContainer.getHeight(),
@@ -451,6 +454,8 @@ public class CarVideoScreen extends Screen implements SurfaceCallback {
 
     private void attachSurface() {
         if (mSurface != null && mSurface.isValid()) {
+            // Fetch only what the car screen can show (at most 720p): saves mobile data.
+            CarVideoCap.set(mSurfaceWidth, mSurfaceHeight);
             CarDisplayBridge.attachCarSurface(mSurface);
         }
     }
@@ -459,5 +464,7 @@ public class CarVideoScreen extends Screen implements SurfaceCallback {
         if (mSurface != null) {
             CarDisplayBridge.detachCarSurface(mSurface);
         }
+        // Back on the phone: its own quality rules apply.
+        CarVideoCap.clear();
     }
 }

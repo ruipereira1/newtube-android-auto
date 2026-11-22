@@ -10,7 +10,10 @@ import androidx.car.app.CarContext;
 import androidx.car.app.Screen;
 import androidx.car.app.constraints.ConstraintManager;
 import androidx.car.app.model.Action;
+import androidx.car.app.model.ActionStrip;
 import androidx.car.app.model.CarIcon;
+import androidx.car.app.model.GridItem;
+import androidx.car.app.model.GridTemplate;
 import androidx.car.app.model.ItemList;
 import androidx.car.app.model.ListTemplate;
 import androidx.car.app.model.Row;
@@ -24,6 +27,7 @@ import com.liskovsoft.mediaserviceinterfaces.ContentService;
 import com.liskovsoft.mediaserviceinterfaces.data.MediaGroup;
 import com.liskovsoft.mediaserviceinterfaces.data.MediaItem;
 import com.liskovsoft.smartyoutubetv2.common.app.models.data.Video;
+import com.liskovsoft.smartyoutubetv2.common.app.models.playback.service.VideoStateService;
 import com.liskovsoft.smartyoutubetv2.common.app.presenters.PlaybackPresenter;
 import com.liskovsoft.smartyoutubetv2.tv.R;
 import com.liskovsoft.youtubeapi.service.YouTubeServiceManager;
@@ -148,34 +152,71 @@ public class CarVideoListScreen extends Screen {
     @NonNull
     @Override
     public Template onGetTemplate() {
+        CarContext context = getCarContext();
+        boolean grid = CarModePrefs.isGridEnabled(context);
+        boolean loading = !mLoaded && mVideos.isEmpty();
+
+        ItemList.Builder list = new ItemList.Builder();
+        if (!loading) {
+            if (mVideos.isEmpty()) {
+                list.setNoItemsMessage(context.getString(mSignedOut ? R.string.car_list_sign_in
+                        : mFailed ? R.string.car_list_error : R.string.car_list_empty));
+            }
+            for (Video video : mVideos) {
+                if (grid) {
+                    list.addItem(gridItem(video));
+                } else {
+                    list.addItem(row(video));
+                }
+            }
+        }
+
+        // One button in the header switches between a list and a grid of big thumbnails; the
+        // choice is remembered for every car list.
+        ActionStrip switchView = new ActionStrip.Builder()
+                .addAction(new Action.Builder()
+                        .setTitle(context.getString(grid ? R.string.car_view_list
+                                : R.string.car_view_grid))
+                        .setOnClickListener(() -> {
+                            CarModePrefs.setGridEnabled(context, !grid);
+                            invalidate();
+                        })
+                        .build())
+                .build();
+
+        if (grid) {
+            GridTemplate.Builder template = new GridTemplate.Builder()
+                    .setTitle(mTitle)
+                    .setHeaderAction(Action.BACK)
+                    .setActionStrip(switchView);
+            return loading ? template.setLoading(true).build()
+                    : template.setSingleList(list.build()).build();
+        }
         ListTemplate.Builder template = new ListTemplate.Builder()
                 .setTitle(mTitle)
-                .setHeaderAction(Action.BACK);
-
-        if (!mLoaded && mVideos.isEmpty()) {
-            return template.setLoading(true).build();
-        }
-
-        CarContext context = getCarContext();
-        ItemList.Builder list = new ItemList.Builder();
-        if (mVideos.isEmpty()) {
-            list.setNoItemsMessage(context.getString(mSignedOut ? R.string.car_list_sign_in
-                    : mFailed ? R.string.car_list_error : R.string.car_list_empty));
-        }
-        for (Video video : mVideos) {
-            list.addItem(row(video));
-        }
-        return template.setSingleList(list.build()).build();
+                .setHeaderAction(Action.BACK)
+                .setActionStrip(switchView);
+        return loading ? template.setLoading(true).build()
+                : template.setSingleList(list.build()).build();
     }
 
+    /**
+     * A list row: the title, then "channel · views · date" and, when the phone remembers how
+     * far it was watched, "Watched 13:02 of 31:16". The thumbnail carries the length, a red
+     * watched bar and the live label (see {@link CarThumbnails}).
+     */
     private Row row(Video video) {
         Row.Builder row = new Row.Builder()
                 .setTitle(TextUtils.isEmpty(video.title) ? "-" : video.title)
                 .setOnClickListener(() -> open(video));
 
-        String author = video.getAuthor();
-        if (!TextUtils.isEmpty(author)) {
-            row.addText(author);
+        String details = details(video);
+        if (!TextUtils.isEmpty(details)) {
+            row.addText(details);
+        }
+        String watched = watchedText(video);
+        if (watched != null) {
+            row.addText(watched);
         }
 
         Bitmap thumbnail = video.cardImageUrl != null ? mThumbnails.get(video.cardImageUrl) : null;
@@ -188,6 +229,53 @@ public class CarVideoListScreen extends Screen {
             row.setBrowsable(true);
         }
         return row.build();
+    }
+
+    /** A grid item: big thumbnail, the title and the channel. */
+    private GridItem gridItem(Video video) {
+        GridItem.Builder item = new GridItem.Builder()
+                .setTitle(TextUtils.isEmpty(video.title) ? "-" : video.title)
+                .setOnClickListener(() -> open(video));
+        String author = video.getAuthor();
+        if (!TextUtils.isEmpty(author)) {
+            item.setText(author);
+        }
+        Bitmap thumbnail = video.cardImageUrl != null ? mThumbnails.get(video.cardImageUrl) : null;
+        if (thumbnail != null) {
+            item.setImage(new CarIcon.Builder(IconCompat.createWithBitmap(thumbnail)).build(),
+                    GridItem.IMAGE_TYPE_LARGE);
+        } else {
+            // A grid item needs a picture: the play icon until the thumbnail arrives.
+            item.setImage(new CarIcon.Builder(IconCompat.createWithResource(getCarContext(),
+                    isFolder(video) ? R.drawable.ic_player_queue : R.drawable.ic_player_play))
+                    .build(), GridItem.IMAGE_TYPE_ICON);
+        }
+        return item.build();
+    }
+
+    /** "Channel · 1.2M views · 3 days ago" as YouTube gives it, or just the channel. */
+    @Nullable
+    private static String details(Video video) {
+        if (!TextUtils.isEmpty(video.secondTitle)) {
+            return video.secondTitle.toString();
+        }
+        String author = video.getAuthor();
+        return TextUtils.isEmpty(author) ? null : author;
+    }
+
+    /** "Watched 13:02 of 31:16" / "Watched to the end", from what the phone remembers. */
+    @Nullable
+    private String watchedText(Video video) {
+        VideoStateService.State state = CarThumbnails.state(getCarContext(), video);
+        if (state == null || state.durationMs <= 0 || state.positionMs <= 0) {
+            return null;
+        }
+        if (state.positionMs >= state.durationMs * CarThumbnails.WATCHED_TO_END) {
+            return getCarContext().getString(R.string.car_watched_all);
+        }
+        return getCarContext().getString(R.string.car_watched_of,
+                CarThumbnails.formatTime(state.positionMs),
+                CarThumbnails.formatTime(state.durationMs));
     }
 
     private void open(Video video) {
@@ -300,24 +388,24 @@ public class CarVideoListScreen extends Screen {
 
     /** Fetches the thumbnails of the rows not asked for yet in one go, then redraws the list once. */
     private void loadThumbnails() {
-        List<String> urls = new ArrayList<>();
+        List<Video> videos = new ArrayList<>();
         for (Video video : mVideos) {
             if (!TextUtils.isEmpty(video.cardImageUrl) && mThumbnailsRequested.add(video.cardImageUrl)) {
-                urls.add(video.cardImageUrl);
+                videos.add(video);
             }
         }
-        if (urls.isEmpty()) {
+        if (videos.isEmpty()) {
             return;
         }
         Context appContext = getCarContext().getApplicationContext();
+        String liveLabel = getCarContext().getString(R.string.car_live);
         Disposable disposable = Observable.fromCallable(() -> {
                     Map<String, Bitmap> result = new HashMap<>();
-                    for (String url : urls) {
+                    for (Video video : videos) {
                         try {
-                            result.put(url, Glide.with(appContext).asBitmap().load(url)
-                                    .centerCrop()
-                                    .submit(THUMB_WIDTH, THUMB_HEIGHT)
-                                    .get(10, TimeUnit.SECONDS));
+                            Bitmap bitmap = loadThumbnail(appContext, video.cardImageUrl);
+                            result.put(video.cardImageUrl, CarThumbnails.decorate(bitmap, video,
+                                    CarThumbnails.watchedFraction(appContext, video), liveLabel));
                         } catch (Exception e) {
                             // A missing thumbnail only leaves that row without a picture.
                         }
@@ -331,6 +419,34 @@ public class CarVideoListScreen extends Screen {
                     invalidate();
                 }, error -> { });
         mDisposables.add(disposable);
+    }
+
+    /** The small version of the thumbnail, or the original when there is no small one. */
+    private static Bitmap loadThumbnail(Context context, String url) throws Exception {
+        String small = smallThumbnailUrl(url);
+        try {
+            return Glide.with(context).asBitmap().load(small).centerCrop()
+                    .submit(THUMB_WIDTH, THUMB_HEIGHT).get(10, TimeUnit.SECONDS);
+        } catch (Exception e) {
+            if (small.equals(url)) {
+                throw e;
+            }
+            return Glide.with(context).asBitmap().load(url).centerCrop()
+                    .submit(THUMB_WIDTH, THUMB_HEIGHT).get(10, TimeUnit.SECONDS);
+        }
+    }
+
+    /**
+     * The 320x180 version of a YouTube thumbnail (about 10 KB) instead of the 480x360 or larger
+     * one the lists carry: the car shows it small, so this saves mobile data. Other URLs as given.
+     */
+    static String smallThumbnailUrl(String url) {
+        if (!url.contains("ytimg.com/vi/")) {
+            return url;
+        }
+        // The query string signs the original size only, so it goes too.
+        return url.replaceFirst("/(hq|sd|maxres|hq720)default(_live)?\\.(jpg|webp)(\\?.*)?$",
+                "/mqdefault$2.jpg");
     }
 
     private static boolean isSignedIn() {

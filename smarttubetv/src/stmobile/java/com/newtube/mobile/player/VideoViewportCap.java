@@ -56,6 +56,11 @@ final class VideoViewportCap {
 
     /** PiP / mini card: capped whatever the network. */
     @Nullable private volatile Viewport mViewport;
+    /**
+     * NEWTUBE(car): the Android Auto screen, while the video is shown there. Kept apart from
+     * {@link #mViewport} because the phone's own PiP / resume path clears that one.
+     */
+    @Nullable private volatile Viewport mCarViewport;
 
     static VideoViewportCap shared() {
         return SHARED;
@@ -98,10 +103,43 @@ final class VideoViewportCap {
         NetPath.log("viewport full reason=" + reason + " -> cap off");
     }
 
-    /** The window that caps selection right now (PiP / mini card), or null. A volatile read. */
+    /** Cap selection to the car screen ({@code width x height} px) until {@link #clearCar}. */
+    void setCar(int width, int height) {
+        if (width <= 0 || height <= 0) {
+            return;
+        }
+        Viewport current = mCarViewport;
+        if (current != null && current.width == width && current.height == height) {
+            return;
+        }
+        mCarViewport = new Viewport("car", width, height);
+        NetPath.log("viewport car size=" + width + "x" + height + " -> cap on");
+    }
+
+    /** The video left the car screen: the phone's own rules apply again. */
+    void clearCar() {
+        if (mCarViewport == null) {
+            return;
+        }
+        mCarViewport = null;
+        NetPath.log("viewport car gone -> cap off");
+    }
+
+    /**
+     * The window that caps selection right now (PiP / mini card, or the car screen), or null; the
+     * smaller of the two when both are set. A volatile read.
+     */
     @Nullable
     Viewport current() {
-        return mViewport;
+        Viewport small = mViewport;
+        Viewport car = mCarViewport;
+        if (small == null) {
+            return car;
+        }
+        if (car == null) {
+            return small;
+        }
+        return (long) car.width * car.height < (long) small.width * small.height ? car : small;
     }
 
     /**

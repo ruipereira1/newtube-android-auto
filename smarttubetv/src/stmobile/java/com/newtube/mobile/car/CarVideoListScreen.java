@@ -227,8 +227,10 @@ public class CarVideoListScreen extends Screen {
                 if (video.videoId == null && video.mediaItem == null) {
                     continue;
                 }
-                if (TextUtils.isEmpty(video.title)) {
-                    continue; // section headers and other untitled entries: nothing to show or play
+                if (TextUtils.isEmpty(video.title) || video.isEmpty()) {
+                    // Section headers, and cards that open nothing here: paid movies and the
+                    // "Watch ... with Premium" promotions YouTube mixes into Home.
+                    continue;
                 }
                 String key = video.videoId != null ? video.videoId
                         : String.valueOf(video.playlistId) + '/' + video.channelId + '/' + video.title;

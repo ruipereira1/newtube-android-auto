@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Themed-icon (API 33+) monochrome layer: the NewTube arch mark as a single
-     silhouette the launcher tints. Same geometry as the foreground. -->
+<!-- Themed-icon (API 33+) monochrome layer: the NewTube arch alone. In a single colour the car
+     badge would merge with the arch's leg, so the themed icon keeps just the mark. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"

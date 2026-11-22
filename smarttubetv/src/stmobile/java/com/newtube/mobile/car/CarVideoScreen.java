@@ -232,8 +232,11 @@ public class CarVideoScreen extends Screen implements SurfaceCallback {
 
         // Two refreshes in a row (about two seconds), so the short idle moment while a new video
         // loads never flashes the message.
-        boolean problem = player != null && (player.getPlayerError() != null
-                || player.getPlaybackState() == Player.STATE_IDLE);
+        // An ended live stream or a blocked video never errors: the app marks the video itself as
+        // unplayable and simply loads nothing, so check that too.
+        boolean problem = (video != null && video.isUnplayable)
+                || (player != null && (player.getPlayerError() != null
+                        || player.getPlaybackState() == Player.STATE_IDLE));
         mProblemTicks = problem ? mProblemTicks + 1 : 0;
         boolean showProblem = mProblemTicks >= 2;
 

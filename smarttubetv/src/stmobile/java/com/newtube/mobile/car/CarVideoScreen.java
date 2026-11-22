@@ -124,6 +124,7 @@ public class CarVideoScreen extends Screen implements SurfaceCallback {
                                 invalidate();
                             })
                             .build())
+                    .addAction(menuAction(context))
                     .build();
         }
 
@@ -131,6 +132,7 @@ public class CarVideoScreen extends Screen implements SurfaceCallback {
         Video video = CarDisplayBridge.getVideo();
         if (player == null || video == null) {
             return message(context.getString(R.string.car_start_video))
+                    .addAction(menuAction(context))
                     .addAction(new Action.Builder()
                             .setTitle(context.getString(R.string.car_disable_passenger_mode))
                             .setOnClickListener(this::disablePassengerMode)
@@ -152,11 +154,24 @@ public class CarVideoScreen extends Screen implements SurfaceCallback {
                                 CarDisplayBridge::togglePlayPause))
                         .addAction(action(R.drawable.ic_player_next,
                                 context.getString(R.string.car_next), this::next))
-                        .addAction(action(R.drawable.ic_mobile_settings,
-                                context.getString(R.string.car_disable_passenger_mode),
-                                this::disablePassengerMode))
+                        // Passenger mode is switched from inside the menu (Android Auto allows
+                        // four buttons here).
+                        .addAction(action(R.drawable.ic_player_queue,
+                                context.getString(R.string.car_menu), this::openMenu))
                         .build())
                 .build();
+    }
+
+    private Action menuAction(CarContext context) {
+        return new Action.Builder()
+                .setTitle(context.getString(R.string.car_menu))
+                .setOnClickListener(this::openMenu)
+                .build();
+    }
+
+    /** Opens the NewTube menu (Home, Subscriptions, ...) on the car screen. */
+    private void openMenu() {
+        getScreenManager().push(new CarMenuScreen(getCarContext()));
     }
 
     private MessageTemplate.Builder message(String text) {

@@ -41,7 +41,7 @@ public class CarMenuScreen extends Screen {
                 CarVideoListScreen.Source.HISTORY));
         list.addItem(section(R.string.car_menu_playlists, R.drawable.ic_player_queue,
                 CarVideoListScreen.Source.PLAYLISTS));
-        list.addItem(section(R.string.car_menu_trending, R.drawable.ic_mobile_search,
+        list.addItem(section(R.string.car_menu_trending, R.drawable.ic_car_trending,
                 CarVideoListScreen.Source.TRENDING));
 
         list.addItem(new Row.Builder()

@@ -53,6 +53,8 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
  */
 public class CarVideoListScreen extends Screen {
     private static final int FALLBACK_ROW_LIMIT = 6;
+    /** Even parked, a car list is for picking, not browsing: enough rows, and Home stops paging. */
+    private static final int MAX_ROWS = 30;
     private static final int THUMB_WIDTH = 320;
     private static final int THUMB_HEIGHT = 180;
 
@@ -101,6 +103,8 @@ public class CarVideoListScreen extends Screen {
     private final List<Video> mVideos = new ArrayList<>();
     private final Set<String> mSeen = new HashSet<>();
     private final Map<String, Bitmap> mThumbnails = new HashMap<>();
+    /** Thumbnails already asked for, so each is fetched once. */
+    private final Set<String> mThumbnailsRequested = new HashSet<>();
     @Nullable
     private Disposable mLoad;
     private boolean mLoaded;
@@ -110,7 +114,7 @@ public class CarVideoListScreen extends Screen {
             @NonNull Loader loader) {
         super(carContext);
         mTitle = title;
-        mRowLimit = rowLimit(carContext);
+        mRowLimit = Math.min(rowLimit(carContext), MAX_ROWS);
         getLifecycle().addObserver(new DefaultLifecycleObserver() {
             @Override
             public void onDestroy(@NonNull LifecycleOwner owner) {
@@ -223,6 +227,9 @@ public class CarVideoListScreen extends Screen {
                 if (video.videoId == null && video.mediaItem == null) {
                     continue;
                 }
+                if (TextUtils.isEmpty(video.title)) {
+                    continue; // section headers and other untitled entries: nothing to show or play
+                }
                 String key = video.videoId != null ? video.videoId
                         : String.valueOf(video.playlistId) + '/' + video.channelId + '/' + video.title;
                 if (mSeen.add(key)) {
@@ -237,7 +244,10 @@ public class CarVideoListScreen extends Screen {
             }
             onLoadDone();
         } else if (wasEmpty && !mVideos.isEmpty()) {
+            // First rows on screen: show them now and start their thumbnails. Home keeps paging
+            // for a while, so waiting for the end would leave the list without pictures.
             invalidate();
+            loadThumbnails();
         }
     }
 
@@ -257,11 +267,11 @@ public class CarVideoListScreen extends Screen {
         loadThumbnails();
     }
 
-    /** Fetches the thumbnails of the rows on screen in one go, then redraws the list once. */
+    /** Fetches the thumbnails of the rows not asked for yet in one go, then redraws the list once. */
     private void loadThumbnails() {
         List<String> urls = new ArrayList<>();
         for (Video video : mVideos) {
-            if (!TextUtils.isEmpty(video.cardImageUrl)) {
+            if (!TextUtils.isEmpty(video.cardImageUrl) && mThumbnailsRequested.add(video.cardImageUrl)) {
                 urls.add(video.cardImageUrl);
             }
         }

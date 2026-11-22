@@ -25,7 +25,8 @@ import androidx.media3.ui.AspectRatioFrameLayout;
  * {@link Presentation} on that display holds an {@link AspectRatioFrameLayout} in zoom mode with
  * a {@link SurfaceView} inside. The player renders into that SurfaceView, so the picture keeps
  * its shape and covers the whole screen; whatever does not fit (a little at the top and bottom of
- * a 16:9 video on a wide screen) is cropped. No black bars, no distortion.</p>
+ * a 16:9 video on a wide screen) is cropped. Vertical videos (Shorts) are shown whole instead,
+ * with black bars at the sides. Never distorted.</p>
  */
 final class CarLetterbox {
     interface Listener {
@@ -112,6 +113,11 @@ final class CarLetterbox {
             return;
         }
         mAspectRatio = aspectRatio;
+        // Landscape fills the screen (a thin crop at most). A vertical video would lose most of
+        // its picture that way, so it is shown whole, with black bars at the sides.
+        mFrame.setResizeMode(aspectRatio < 1f
+                ? AspectRatioFrameLayout.RESIZE_MODE_FIT
+                : AspectRatioFrameLayout.RESIZE_MODE_ZOOM);
         mFrame.setAspectRatio(aspectRatio);
     }
 

@@ -1,5 +1,6 @@
 package com.newtube.mobile.car;
 
+import android.graphics.Rect;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.Surface;
@@ -20,6 +21,7 @@ import androidx.car.app.navigation.model.NavigationTemplate;
 import androidx.core.graphics.drawable.IconCompat;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
+import androidx.media3.common.VideoSize;
 import androidx.media3.exoplayer.ExoPlayer;
 
 import com.liskovsoft.smartyoutubetv2.common.app.models.data.Video;
@@ -50,8 +52,17 @@ public class CarVideoScreen extends Screen implements SurfaceCallback {
     private static final long REFRESH_MS = 1_000;
 
     private final Handler mHandler = new Handler(Looper.getMainLooper());
+    /** The surface the player draws into: the letterboxed video view, or the raw host surface. */
     @Nullable
     private Surface mSurface;
+    /** The whole-screen surface the host gave us. */
+    @Nullable
+    private Surface mHostSurface;
+    @Nullable
+    private CarLetterbox mLetterbox;
+    /** Part of the car screen not covered by the host's own UI; null until the host reports it. */
+    @Nullable
+    private Rect mVisibleArea;
     private boolean mStarted;
     private boolean mPolling;
     private boolean mLastPassengerMode;
@@ -188,6 +199,7 @@ public class CarVideoScreen extends Screen implements SurfaceCallback {
         boolean hasPlayer = player != null && video != null;
         boolean playWhenReady = player != null && player.getPlayWhenReady();
         String videoId = video != null ? video.videoId : null;
+        updateAspectRatio(player);
 
         if (passengerMode != mLastPassengerMode
                 || hasPlayer != mLastHasPlayer
@@ -221,8 +233,29 @@ public class CarVideoScreen extends Screen implements SurfaceCallback {
         } catch (RuntimeException e) {
             // The host may already be gone; the callback dies with it.
         }
+        releaseHostSurface();
+    }
+
+    private void updateAspectRatio(@Nullable ExoPlayer player) {
+        if (mLetterbox == null || player == null) {
+            return;
+        }
+        VideoSize size = player.getVideoSize();
+        if (size.width > 0 && size.height > 0) {
+            mLetterbox.setVideoAspectRatio(size.width * size.pixelWidthHeightRatio / size.height);
+        }
+    }
+
+    /** Drops everything tied to the host surface: the player first, then the letterbox window. */
+    private void releaseHostSurface() {
         detachSurfaceFromPlayer();
         mSurface = null;
+        CarLetterbox letterbox = mLetterbox;
+        mLetterbox = null;
+        if (letterbox != null) {
+            letterbox.release();
+        }
+        mHostSurface = null;
     }
 
     @Override
@@ -231,20 +264,57 @@ public class CarVideoScreen extends Screen implements SurfaceCallback {
         if (surface == null || !surface.isValid()) {
             return;
         }
-        mSurface = surface;
-        if (mStarted) {
-            attachSurface();
+        if (mHostSurface != null) {
+            releaseHostSurface();
+        }
+        mHostSurface = surface;
+        try {
+            mLetterbox = new CarLetterbox(getCarContext(), surface,
+                    surfaceContainer.getWidth(), surfaceContainer.getHeight(),
+                    surfaceContainer.getDpi(), new CarLetterbox.Listener() {
+                        @Override
+                        public void onVideoSurfaceReady(@NonNull Surface videoSurface) {
+                            mSurface = videoSurface;
+                            updateAspectRatio(CarDisplayBridge.getPlayer());
+                            if (mStarted) {
+                                attachSurface();
+                            }
+                        }
+
+                        @Override
+                        public void onVideoSurfaceGone(@NonNull Surface videoSurface) {
+                            if (mSurface == videoSurface) {
+                                detachSurfaceFromPlayer();
+                                mSurface = null;
+                            }
+                        }
+                    });
+            mLetterbox.setVisibleArea(mVisibleArea);
+        } catch (RuntimeException e) {
+            // No virtual display on this phone: fall back to the raw (stretched) host surface.
+            mLetterbox = null;
+            mSurface = surface;
+            if (mStarted) {
+                attachSurface();
+            }
         }
     }
 
     @Override
     public void onSurfaceDestroyed(@NonNull SurfaceContainer surfaceContainer) {
-        // The binder may hand back a different Surface wrapper for the same native surface, so
-        // identity alone is not enough: an invalid mSurface is also ours to drop.
-        if (mSurface != null
-                && (surfaceContainer.getSurface() == mSurface || !mSurface.isValid())) {
-            detachSurfaceFromPlayer();
-            mSurface = null;
+        // The host owns one surface per screen, and the binder may hand back a different Surface
+        // wrapper for it, so compare nothing: whatever we built on the host surface goes now,
+        // before the native surface under the virtual display disappears.
+        if (mHostSurface != null) {
+            releaseHostSurface();
+        }
+    }
+
+    @Override
+    public void onVisibleAreaChanged(@NonNull Rect visibleArea) {
+        mVisibleArea = new Rect(visibleArea);
+        if (mLetterbox != null) {
+            mLetterbox.setVisibleArea(mVisibleArea);
         }
     }
 

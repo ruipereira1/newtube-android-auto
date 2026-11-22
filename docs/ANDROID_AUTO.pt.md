@@ -19,8 +19,9 @@ o carro recebe a imagem do vídeo que já está a passar no telemóvel e alguns 
 
 ## Instalar
 
-1. Compila o APK (ver [Compilar](#compilar)) ou descarrega o artefacto da aba
-   [Actions](https://github.com/ruipereira1/newtube-android-auto/actions/workflows/android-auto.yml).
+1. Descarrega o APK da
+   [versão mais recente](https://github.com/ruipereira1/newtube-android-auto/releases/latest)
+   (na maioria dos telemóveis é o ficheiro **arm64-v8a**), ou compila-o (ver [Compilar](#compilar)).
 2. No telemóvel, autoriza a instalação de apps de fontes desconhecidas para a app que vais usar
    para abrir o APK.
 3. Instala o APK.

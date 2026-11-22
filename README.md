@@ -55,8 +55,9 @@ surface and a small set of controls.
 
 ## Install
 
-1. Build the APK (see [Build](#build)) or download the debug artifact from the
-   [Actions](https://github.com/ruipereira1/newtube-android-auto/actions/workflows/android-auto.yml) tab.
+1. Download the APK from the
+   [latest release](https://github.com/ruipereira1/newtube-android-auto/releases/latest)
+   (most phones need the **arm64-v8a** file), or build it yourself (see [Build](#build)).
 2. On the phone, allow installs from unknown sources for the app you use to open the APK.
 3. Install the APK.
 4. Open **Android Auto** on the phone, enable **Developer mode** (tap the version number ten

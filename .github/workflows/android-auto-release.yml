@@ -46,14 +46,18 @@ jobs:
       - name: Build APK
         run: ./gradlew :smarttubetv:assembleStmobileDebug --no-daemon
 
-      - name: Give the APKs clear names
+      - name: Give the files clear names
+        # Fixed names, so ".../releases/latest/download/<name>" always points at the newest file.
         run: |
-          mkdir -p dist
+          mkdir -p dist installer
           OUT=smarttubetv/build/outputs/apk/stmobile/debug
-          TAG="${GITHUB_REF_NAME}"
-          cp "$OUT/smarttubetv-stmobile-arm64-v8a-debug.apk"   "dist/NewTube-Android-Auto-${TAG}-arm64-v8a.apk"
-          cp "$OUT/smarttubetv-stmobile-armeabi-v7a-debug.apk" "dist/NewTube-Android-Auto-${TAG}-armeabi-v7a.apk"
-          cp "$OUT/smarttubetv-stmobile-universal-debug.apk"   "dist/NewTube-Android-Auto-${TAG}-universal.apk"
+          cp "$OUT/smarttubetv-stmobile-arm64-v8a-debug.apk"   dist/NewTube-Android-Auto-arm64-v8a.apk
+          cp "$OUT/smarttubetv-stmobile-armeabi-v7a-debug.apk" dist/NewTube-Android-Auto-armeabi-v7a.apk
+          cp "$OUT/smarttubetv-stmobile-universal-debug.apk"   dist/NewTube-Android-Auto-universal.apk
+          # Computer installer: the app plus the scripts, ready to double-click.
+          cp scripts/android-auto/Install.bat scripts/android-auto/install.ps1 scripts/android-auto/install.sh installer/
+          cp dist/NewTube-Android-Auto-arm64-v8a.apk installer/
+          (cd installer && zip -q -r ../dist/NewTube-Android-Auto-computer-installer.zip .)
           ls -la dist
 
       - name: Publish the release
@@ -61,22 +65,22 @@ jobs:
         with:
           name: NewTube for Android Auto ${{ github.ref_name }}
           body: |
+            ![NewTube on the car screen](https://raw.githubusercontent.com/${{ github.repository }}/${{ github.ref_name }}/docs/images/android-auto/car-player.jpg)
+
+            **New here? Follow the simple guide:**
+            [English](https://github.com/${{ github.repository }}/blob/${{ github.ref_name }}/docs/INSTALL.md) ·
+            [Português](https://github.com/${{ github.repository }}/blob/${{ github.ref_name }}/docs/INSTALL.pt.md)
+
             **Which file do I need?**
-            - Most phones from the last few years (Pixel, Samsung Galaxy S/A, Xiaomi...): **arm64-v8a**.
-            - Older 32-bit phones: **armeabi-v7a**.
-            - Not sure: **universal** (bigger, works on every phone).
+            - On the phone: **NewTube-Android-Auto-arm64-v8a.apk** (almost every phone from the
+              last few years). Very old phone: *armeabi-v7a*. Not sure: *universal* (bigger).
+            - On a computer, if NewTube does not show up in the car:
+              **NewTube-Android-Auto-computer-installer.zip** (unzip it and double-click
+              `Install.bat` on Windows, or run `install.sh` on a Mac or Linux).
 
-            **How to install so that Android Auto accepts it**
-            Android Auto only shows apps that look as if they came from Google Play. A normal
-            install from a browser or file manager may not appear in the car. See
-            [docs/ANDROID_AUTO.md](https://github.com/${{ github.repository }}/blob/${{ github.ref_name }}/docs/ANDROID_AUTO.md)
-            and the README for the steps (Android Auto developer settings and installing with
-            Google Play as the source).
-
-            **Updating from an older build**
-            These APKs are signed by GitHub's build machine. If your current NewTube was built
-            somewhere else, Android will refuse to update it: uninstall the old one first (this
-            clears NewTube's settings and sign-in).
+            **Updating from an older build?** These files are signed by GitHub. If your current
+            NewTube came from somewhere else, Android will refuse the update: uninstall the old
+            one first (this clears NewTube's settings and sign-in).
 
             Passenger use only. The driver must not watch video while driving.
-          files: dist/*.apk
+          files: dist/*

@@ -425,10 +425,11 @@
     <string name="sabr_vod_stopped">Se ha detenido la reproducción SABR experimental. Pulsa reproducir para reintentar o desactiva SABR en Ajustes.</string>
 
     <!-- NEWTUBE(android-auto): pantalla del coche y ajuste de modo pasajero. -->
-    <string name="car_passenger_mode_off">El modo pasajero está desactivado. Actívalo para ver vídeo en esta pantalla mientras el coche está en marcha.</string>
+    <string name="car_passenger_mode_off">El modo pasajero está desactivado. Actívalo para ver vídeo aquí.</string>
     <string name="car_enable_passenger_mode">Activar modo pasajero</string>
     <string name="car_disable_passenger_mode">Desactivar modo pasajero</string>
     <string name="car_start_video">Inicia un vídeo en el teléfono o toca Menú para elegir uno aquí.</string>
+    <string name="car_video_unavailable">No se pudo reproducir este vídeo. Toca Menú para elegir otro.</string>
     <string name="car_menu">Menú</string>
     <string name="car_menu_home">Inicio</string>
     <string name="car_menu_subscriptions">Suscripciones</string>

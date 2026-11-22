@@ -17,10 +17,12 @@ import androidx.car.app.model.ActionStrip;
 import androidx.car.app.model.CarIcon;
 import androidx.car.app.model.MessageTemplate;
 import androidx.car.app.model.Template;
+import androidx.car.app.navigation.model.MessageInfo;
 import androidx.car.app.navigation.model.NavigationTemplate;
 import androidx.core.graphics.drawable.IconCompat;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
+import androidx.media3.common.Player;
 import androidx.media3.common.VideoSize;
 import androidx.media3.exoplayer.ExoPlayer;
 
@@ -70,6 +72,9 @@ public class CarVideoScreen extends Screen implements SurfaceCallback {
     private boolean mLastPlayWhenReady;
     @Nullable
     private String mLastVideoId;
+    /** Refreshes in a row in which the player had nothing to play (error, ended live, ...). */
+    private int mProblemTicks;
+    private boolean mLastShowProblem;
 
     private final Runnable mRefresh = new Runnable() {
         @Override
@@ -141,10 +146,18 @@ public class CarVideoScreen extends Screen implements SurfaceCallback {
         }
 
         boolean playWhenReady = player.getPlayWhenReady();
-        return new NavigationTemplate.Builder()
+        NavigationTemplate.Builder template = new NavigationTemplate.Builder();
+        if (mLastShowProblem) {
+            // The player has nothing to show (an ended live stream, a video that failed): say so
+            // instead of leaving the car screen black. Same template, so no screen change.
+            template.setNavigationInfo(new MessageInfo.Builder(
+                    context.getString(R.string.car_video_unavailable)).build());
+        }
+        // Previous and Next are icons only: with four labelled buttons Android Auto cuts the last
+        // label ("Menu") down to "...".
+        return template
                 .setActionStrip(new ActionStrip.Builder()
-                        .addAction(action(R.drawable.ic_player_previous,
-                                context.getString(R.string.car_previous), this::previous))
+                        .addAction(action(R.drawable.ic_player_previous, null, this::previous))
                         .addAction(action(playWhenReady
                                         ? R.drawable.ic_player_pause
                                         : R.drawable.ic_player_play,
@@ -152,8 +165,7 @@ public class CarVideoScreen extends Screen implements SurfaceCallback {
                                         ? R.string.car_pause
                                         : R.string.car_play),
                                 CarDisplayBridge::togglePlayPause))
-                        .addAction(action(R.drawable.ic_player_next,
-                                context.getString(R.string.car_next), this::next))
+                        .addAction(action(R.drawable.ic_player_next, null, this::next))
                         // Passenger mode is switched from inside the menu (Android Auto allows
                         // four buttons here).
                         .addAction(action(R.drawable.ic_player_queue,
@@ -178,13 +190,15 @@ public class CarVideoScreen extends Screen implements SurfaceCallback {
         return new MessageTemplate.Builder(text);
     }
 
-    private Action action(int iconRes, String title, Runnable onClick) {
-        return new Action.Builder()
+    private Action action(int iconRes, @Nullable String title, Runnable onClick) {
+        Action.Builder action = new Action.Builder()
                 .setIcon(new CarIcon.Builder(
                         IconCompat.createWithResource(getCarContext(), iconRes)).build())
-                .setTitle(title)
-                .setOnClickListener(onClick::run)
-                .build();
+                .setOnClickListener(onClick::run);
+        if (title != null) {
+            action.setTitle(title);
+        }
+        return action.build();
     }
 
     private void previous() {
@@ -216,13 +230,25 @@ public class CarVideoScreen extends Screen implements SurfaceCallback {
         String videoId = video != null ? video.videoId : null;
         updateAspectRatio(player);
 
+        // Two refreshes in a row (about two seconds), so the short idle moment while a new video
+        // loads never flashes the message.
+        // An ended live stream or a blocked video never errors: the app marks the video itself as
+        // unplayable and simply loads nothing, so check that too.
+        boolean problem = (video != null && video.isUnplayable)
+                || (player != null && (player.getPlayerError() != null
+                        || player.getPlaybackState() == Player.STATE_IDLE));
+        mProblemTicks = problem ? mProblemTicks + 1 : 0;
+        boolean showProblem = mProblemTicks >= 2;
+
         if (passengerMode != mLastPassengerMode
                 || hasPlayer != mLastHasPlayer
                 || playWhenReady != mLastPlayWhenReady
+                || showProblem != mLastShowProblem
                 || !Objects.equals(videoId, mLastVideoId)) {
             mLastPassengerMode = passengerMode;
             mLastHasPlayer = hasPlayer;
             mLastPlayWhenReady = playWhenReady;
+            mLastShowProblem = showProblem;
             mLastVideoId = videoId;
             invalidate();
         }

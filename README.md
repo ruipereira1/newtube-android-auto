@@ -15,6 +15,10 @@ surface and a small set of controls.
 [![License: MIT](https://img.shields.io/badge/license-MIT-1E2A78?style=flat-square)](LICENSE)
 [![Status: experimental](https://img.shields.io/badge/status-experimental-orange?style=flat-square)](#status-and-limitations)
 
+<img src="docs/images/android-auto/car-player.jpg" width="720" alt="A video playing full screen on the car screen, with Previous, Pause, Next and Menu buttons">
+
+### [⬇ Download](https://github.com/ruipereira1/newtube-android-auto/releases/latest) · [How to install (simple guide)](docs/INSTALL.md) · [Como instalar (guia simples)](docs/INSTALL.pt.md)
+
 </div>
 
 > [!WARNING]
@@ -23,8 +27,19 @@ surface and a small set of controls.
 > NewTube or SmartTube. Use it at your own risk and follow the law where you drive.
 
 > **Português:** este fork mostra o vídeo do NewTube no ecrã do Android Auto para o passageiro.
-> O modo passageiro vem ligado por omissão. O condutor não deve ver vídeo. Instruções em
-> português: [docs/ANDROID_AUTO.pt.md](docs/ANDROID_AUTO.pt.md).
+> O condutor não deve ver vídeo. Guia de instalação simples:
+> [docs/INSTALL.pt.md](docs/INSTALL.pt.md). Detalhes técnicos:
+> [docs/ANDROID_AUTO.pt.md](docs/ANDROID_AUTO.pt.md).
+
+## On the car screen
+
+| Start | Menu | Watching |
+|:--:|:--:|:--:|
+| <img src="docs/images/android-auto/car-start.png" width="260" alt="Start screen"> | <img src="docs/images/android-auto/car-menu.png" width="260" alt="Menu with Home, Subscriptions and History"> | <img src="docs/images/android-auto/car-player.jpg" width="260" alt="Video playing with the car buttons"> |
+| Start a video on the phone, or tap **Menu** | Home, Subscriptions, History, Playlists, Trending | Full screen, with Previous, Pause, Next and Menu |
+
+*Screenshots from the Android Auto desktop head unit, with the app in Portuguese (it follows the
+phone's language). Video: "Big Buck Bunny" © Blender Foundation, CC BY 3.0.*
 
 ## What this fork adds
 
@@ -55,17 +70,21 @@ surface and a small set of controls.
 
 ## Install
 
-1. Download the APK from the
-   [latest release](https://github.com/ruipereira1/newtube-android-auto/releases/latest)
-   (most phones need the **arm64-v8a** file), or build it yourself (see [Build](#build)).
-2. On the phone, allow installs from unknown sources for the app you use to open the APK.
-3. Install the APK.
-4. Open **Android Auto** on the phone, enable **Developer mode** (tap the version number ten
-   times), then open **Developer settings** and enable **Unknown sources**.
-5. Connect the phone to the car and open **NewTube** from the Android Auto launcher.
-6. Tap **Menu** on the car screen and pick a video, or start one on the phone. It appears on
-   the car screen.
-7. Use the buttons at the top of the car screen: previous, play/pause, next and Menu.
+**Step-by-step guide for everyone:** [English](docs/INSTALL.md) · [Português](docs/INSTALL.pt.md)
+
+In short:
+
+1. On the phone, download **NewTube-Android-Auto-arm64-v8a.apk** from the
+   [latest release](https://github.com/ruipereira1/newtube-android-auto/releases/latest) and
+   install it.
+2. In **Android Auto** settings, tap **Version** ten times, then
+   **⋮ → Developer settings → Unknown sources** on.
+3. In the car, open **NewTube**, tap **Menu** and pick a video.
+
+If NewTube does not appear in the car, install it with the computer installer from the same
+release (`NewTube-Android-Auto-computer-installer.zip`, double-click `Install.bat`). It installs
+the app the way Android Auto expects (as if it came from Google Play). The scripts are in
+[`scripts/android-auto/`](scripts/android-auto/).
 
 Passenger mode is switched on and off at the bottom of the car **Menu**, or on the phone in
 **Settings → Android Auto passenger mode**.

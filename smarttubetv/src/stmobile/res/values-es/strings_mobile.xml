@@ -423,4 +423,16 @@
     <string name="mobile_about_share_text">NewTube, un cliente de YouTube para móviles basado en SmartTube: %1$s</string>
     <string name="sabr_vod_option">Preferir SABR aunque haya enlaces (experimental; próximo vídeo)</string>
     <string name="sabr_vod_stopped">Se ha detenido la reproducción SABR experimental. Pulsa reproducir para reintentar o desactiva SABR en Ajustes.</string>
+
+    <!-- NEWTUBE(android-auto): pantalla del coche y ajuste de modo pasajero. -->
+    <string name="car_passenger_mode_off">El modo pasajero está desactivado. Actívalo para ver vídeo en esta pantalla mientras el coche está en marcha.</string>
+    <string name="car_enable_passenger_mode">Activar modo pasajero</string>
+    <string name="car_disable_passenger_mode">Desactivar modo pasajero</string>
+    <string name="car_start_video">Abre NewTube en el teléfono e inicia un vídeo. Aparecerá aquí.</string>
+    <string name="car_play">Reproducir</string>
+    <string name="car_pause">Pausar</string>
+    <string name="car_next">Siguiente</string>
+    <string name="car_previous">Anterior</string>
+    <string name="mobile_settings_car_passenger">Modo pasajero de Android Auto</string>
+    <string name="mobile_settings_car_passenger_summary">Mantener el vídeo en la pantalla del coche mientras el coche está en marcha. Solo para pasajeros: el conductor no debe mirar</string>
 </resources>

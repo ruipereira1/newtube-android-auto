@@ -478,6 +478,7 @@
          off. -->
     <string name="car_passenger_mode_off">Passenger mode is off. Turn it on to show video on this screen while the car is moving.</string>
     <string name="car_enable_passenger_mode">Turn on passenger mode</string>
+    <string name="car_disable_passenger_mode">Turn off passenger mode</string>
     <string name="car_start_video">Open NewTube on your phone and start a video. It will appear here.</string>
     <string name="car_play">Play</string>
     <string name="car_pause">Pause</string>

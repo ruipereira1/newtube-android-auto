@@ -1,3 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- NEWTUBE(android-auto): ecrã do carro e ajuste do modo passageiro. -->
+    <string name="car_passenger_mode_off">O modo passageiro está desligado. Liga-o para ver vídeo neste ecrã enquanto o carro está em andamento.</string>
+    <string name="car_enable_passenger_mode">Ligar modo passageiro</string>
+    <string name="car_disable_passenger_mode">Desligar modo passageiro</string>
+    <string name="car_start_video">Abre o NewTube no telemóvel e inicia um vídeo. Ele aparecerá aqui.</string>
+    <string name="car_play">Reproduzir</string>
+    <string name="car_pause">Pausar</string>
+    <string name="car_next">Seguinte</string>
+    <string name="car_previous">Anterior</string>
+    <string name="mobile_settings_car_passenger">Modo passageiro do Android Auto</string>
+    <string name="mobile_settings_car_passenger_summary">Manter o vídeo no ecrã do carro enquanto o carro está em andamento. Só para passageiros: o condutor não deve ver</string>
 </resources>

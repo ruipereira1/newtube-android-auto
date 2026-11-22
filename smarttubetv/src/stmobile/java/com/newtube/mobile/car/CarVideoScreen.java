@@ -34,12 +34,16 @@ import java.util.Objects;
  * <p>A {@link NavigationTemplate} is used because the host only exposes a drawing surface to
  * navigation apps. The surface is filled with the live NewTube player (not a map): the activity
  * that owns the player hands it over through {@link CarDisplayBridge}. The template's action
- * strip provides play/pause, next and previous; a tap or a horizontal fling on the video toggles
- * playback or seeks by ten seconds on hosts that forward surface gestures.</p>
+ * strip provides play/pause, next, previous and a switch to turn passenger mode off; a tap or a
+ * horizontal fling on the video toggles playback or seeks by ten seconds on hosts that forward
+ * surface gestures.</p>
  *
  * <p>Video is shown when the passenger mode switch is on ({@link CarModePrefs}). It is on by
  * default and can be turned off from Settings or from the car screen, in which case the screen
  * stays a plain message instead of exposing moving pictures to the driver.</p>
+ *
+ * <p>The surface is detached when the screen stops and reattached when it starts, so the phone
+ * gets the video back while the car app is in the background.</p>
  */
 public class CarVideoScreen extends Screen implements SurfaceCallback {
     private static final long SEEK_STEP_MS = 10_000;
@@ -48,6 +52,7 @@ public class CarVideoScreen extends Screen implements SurfaceCallback {
     private final Handler mHandler = new Handler(Looper.getMainLooper());
     @Nullable
     private Surface mSurface;
+    private boolean mStarted;
     private boolean mPolling;
     private boolean mLastPassengerMode;
     private boolean mLastHasPlayer;
@@ -73,16 +78,21 @@ public class CarVideoScreen extends Screen implements SurfaceCallback {
         getLifecycle().addObserver(new DefaultLifecycleObserver() {
             @Override
             public void onStart(@NonNull LifecycleOwner owner) {
+                mStarted = true;
                 startPolling();
+                attachSurface();
             }
 
             @Override
             public void onStop(@NonNull LifecycleOwner owner) {
+                mStarted = false;
                 stopPolling();
+                detachSurfaceFromPlayer();
             }
 
             @Override
             public void onDestroy(@NonNull LifecycleOwner owner) {
+                mStarted = false;
                 destroy();
             }
         });
@@ -109,7 +119,12 @@ public class CarVideoScreen extends Screen implements SurfaceCallback {
         ExoPlayer player = CarDisplayBridge.getPlayer();
         Video video = CarDisplayBridge.getVideo();
         if (player == null || video == null) {
-            return message(context.getString(R.string.car_start_video)).build();
+            return message(context.getString(R.string.car_start_video))
+                    .addAction(new Action.Builder()
+                            .setTitle(context.getString(R.string.car_disable_passenger_mode))
+                            .setOnClickListener(this::disablePassengerMode)
+                            .build())
+                    .build();
         }
 
         boolean playWhenReady = player.getPlayWhenReady();
@@ -126,6 +141,9 @@ public class CarVideoScreen extends Screen implements SurfaceCallback {
                                 CarDisplayBridge::togglePlayPause))
                         .addAction(action(R.drawable.ic_player_next,
                                 context.getString(R.string.car_next), this::next))
+                        .addAction(action(R.drawable.ic_mobile_settings,
+                                context.getString(R.string.car_disable_passenger_mode),
+                                this::disablePassengerMode))
                         .build())
                 .build();
     }
@@ -154,6 +172,12 @@ public class CarVideoScreen extends Screen implements SurfaceCallback {
         if (!CarDisplayBridge.playNext()) {
             CarDisplayBridge.seekBy(SEEK_STEP_MS);
         }
+        invalidate();
+    }
+
+    private void disablePassengerMode() {
+        CarModePrefs.setPassengerModeEnabled(getCarContext(), false);
+        mLastPassengerMode = false;
         invalidate();
     }
 
@@ -197,7 +221,8 @@ public class CarVideoScreen extends Screen implements SurfaceCallback {
         } catch (RuntimeException e) {
             // The host may already be gone; the callback dies with it.
         }
-        detachSurface();
+        detachSurfaceFromPlayer();
+        mSurface = null;
     }
 
     @Override
@@ -207,7 +232,9 @@ public class CarVideoScreen extends Screen implements SurfaceCallback {
             return;
         }
         mSurface = surface;
-        CarDisplayBridge.attachCarSurface(surface);
+        if (mStarted) {
+            attachSurface();
+        }
     }
 
     @Override
@@ -216,7 +243,8 @@ public class CarVideoScreen extends Screen implements SurfaceCallback {
         // identity alone is not enough: an invalid mSurface is also ours to drop.
         if (mSurface != null
                 && (surfaceContainer.getSurface() == mSurface || !mSurface.isValid())) {
-            detachSurface();
+            detachSurfaceFromPlayer();
+            mSurface = null;
         }
     }
 
@@ -235,9 +263,15 @@ public class CarVideoScreen extends Screen implements SurfaceCallback {
         invalidate();
     }
 
-    private void detachSurface() {
-        Surface surface = mSurface;
-        mSurface = null;
-        CarDisplayBridge.detachCarSurface(surface);
+    private void attachSurface() {
+        if (mSurface != null && mSurface.isValid()) {
+            CarDisplayBridge.attachCarSurface(mSurface);
+        }
+    }
+
+    private void detachSurfaceFromPlayer() {
+        if (mSurface != null) {
+            CarDisplayBridge.detachCarSurface(mSurface);
+        }
     }
 }

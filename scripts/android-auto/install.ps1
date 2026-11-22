@@ -14,7 +14,7 @@ param([string]$Apk = "")
 $ErrorActionPreference = "Continue"   # adb writes progress to stderr
 $here = Split-Path -Parent $MyInvocation.MyCommand.Path
 $latest = "https://github.com/ruipereira1/newtube-android-auto/releases/latest/download/NewTube-Android-Auto-arm64-v8a.apk"
-$packages = @("io.github.aleixrodriala.arc.debug", "io.github.aleixrodriala.arc.auto", "io.github.aleixrodriala.arc")
+$packages = @("io.github.aleixrodriala.arc.auto", "io.github.aleixrodriala.arc.auto.debug")
 
 function Say($t) { Write-Host $t }
 function Fail($t) { Write-Host ""; Write-Host "ERROR: $t" -ForegroundColor Red; exit 1 }

@@ -7,7 +7,7 @@
 set -euo pipefail
 here="$(cd "$(dirname "$0")" && pwd)"
 latest="https://github.com/ruipereira1/newtube-android-auto/releases/latest/download/NewTube-Android-Auto-arm64-v8a.apk"
-packages="io.github.aleixrodriala.arc.debug io.github.aleixrodriala.arc.auto io.github.aleixrodriala.arc"
+packages="io.github.aleixrodriala.arc.auto io.github.aleixrodriala.arc.auto.debug"
 fail() { echo; echo "ERROR: $*" >&2; exit 1; }
 
 apk="${1:-}"

@@ -89,6 +89,10 @@ the app the way Android Auto expects (as if it came from Google Play). The scrip
 Passenger mode is switched on and off at the bottom of the car **Menu**, or on the phone in
 **Settings → Android Auto passenger mode**.
 
+The app is `io.github.aleixrodriala.arc.auto`, so it installs next to upstream NewTube instead
+of replacing it. It does not update itself: new versions come from this repository's releases,
+all signed with the same key. Maintainers: see [docs/RELEASING.md](docs/RELEASING.md).
+
 ## Build
 
 ```bash

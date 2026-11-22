@@ -82,12 +82,13 @@ todas as atualizações.
 
 ## Atualizar
 
-Descarrega a versão nova e instala da mesma maneira. As tuas definições mantêm-se, desde que
-uses sempre ficheiros do mesmo sítio (os lançamentos desta página).
+Descarrega a versão nova da
+[versão mais recente](https://github.com/ruipereira1/newtube-android-auto/releases/latest) e
+instala da mesma maneira. Instala por cima da antiga e mantém as tuas definições. (A app não se
+atualiza sozinha.)
 
-Se o Android disser que a app **não pode ser atualizada** (ou que "entra em conflito com um
-pacote existente"), o teu NewTube atual veio de outro sítio: desinstala-o primeiro e instala o
-novo. Isto apaga as definições e a sessão do NewTube.
+Tinhas uma versão de teste antiga do NewTube para Android Auto? É uma app separada: depois de
+instalares esta, desinstala a antiga para não ficares com dois ícones do NewTube.
 
 ## Outros problemas
 

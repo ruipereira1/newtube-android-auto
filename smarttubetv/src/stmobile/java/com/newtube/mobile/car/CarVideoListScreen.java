@@ -61,6 +61,11 @@ public class CarVideoListScreen extends Screen {
     /** Where a list comes from. Each emission is one or more groups of items. */
     interface Loader {
         Observable<List<MediaGroup>> load(ContentService service);
+
+        /** Lists of the user's own account: they need the phone app to be signed in. */
+        default boolean needsAccount() {
+            return false;
+        }
     }
 
     /** The NewTube sections offered in {@link CarMenuScreen}. */
@@ -76,17 +81,32 @@ public class CarVideoListScreen extends Screen {
             public Observable<List<MediaGroup>> load(ContentService service) {
                 return service.getSubscriptionsObserve().map(Collections::singletonList);
             }
+
+            @Override
+            public boolean needsAccount() {
+                return true;
+            }
         },
         HISTORY {
             @Override
             public Observable<List<MediaGroup>> load(ContentService service) {
                 return service.getHistoryObserve().map(Collections::singletonList);
             }
+
+            @Override
+            public boolean needsAccount() {
+                return true;
+            }
         },
         PLAYLISTS {
             @Override
             public Observable<List<MediaGroup>> load(ContentService service) {
                 return service.getPlaylistsObserve().map(Collections::singletonList);
+            }
+
+            @Override
+            public boolean needsAccount() {
+                return true;
             }
         },
         TRENDING {
@@ -109,6 +129,7 @@ public class CarVideoListScreen extends Screen {
     private Disposable mLoad;
     private boolean mLoaded;
     private boolean mFailed;
+    private boolean mSignedOut;
 
     CarVideoListScreen(@NonNull CarContext carContext, @NonNull String title,
             @NonNull Loader loader) {
@@ -138,8 +159,8 @@ public class CarVideoListScreen extends Screen {
         CarContext context = getCarContext();
         ItemList.Builder list = new ItemList.Builder();
         if (mVideos.isEmpty()) {
-            list.setNoItemsMessage(context.getString(
-                    mFailed ? R.string.car_list_error : R.string.car_list_empty));
+            list.setNoItemsMessage(context.getString(mSignedOut ? R.string.car_list_sign_in
+                    : mFailed ? R.string.car_list_error : R.string.car_list_empty));
         }
         for (Video video : mVideos) {
             list.addItem(row(video));
@@ -192,6 +213,14 @@ public class CarVideoListScreen extends Screen {
     }
 
     private void load(Loader loader) {
+        if (loader.needsAccount() && !isSignedIn()) {
+            // Without an account YouTube answers these with an error, and "check the internet"
+            // would send people the wrong way.
+            mSignedOut = true;
+            onLoadDone();
+            return;
+        }
+
         Observable<List<MediaGroup>> source;
         try {
             source = loader.load(YouTubeServiceManager.instance().getContentService());
@@ -302,6 +331,14 @@ public class CarVideoListScreen extends Screen {
                     invalidate();
                 }, error -> { });
         mDisposables.add(disposable);
+    }
+
+    private static boolean isSignedIn() {
+        try {
+            return YouTubeServiceManager.instance().getSignInService().isSigned();
+        } catch (RuntimeException e) {
+            return true; // unknown: try the request and report what happens
+        }
     }
 
     private static int rowLimit(CarContext context) {

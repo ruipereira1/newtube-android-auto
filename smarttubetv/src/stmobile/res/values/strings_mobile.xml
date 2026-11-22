@@ -491,6 +491,7 @@
     <string name="car_passenger_mode">Passenger mode</string>
     <string name="car_passenger_mode_summary">Show video on this screen while the car is moving</string>
     <string name="car_list_empty">Nothing here yet.</string>
+    <string name="car_list_sign_in">Sign in to NewTube on your phone to see this list.</string>
     <string name="car_list_error">Could not load this list. Check the phone\'s internet connection.</string>
     <string name="car_play">Play</string>
     <string name="car_pause">Pause</string>

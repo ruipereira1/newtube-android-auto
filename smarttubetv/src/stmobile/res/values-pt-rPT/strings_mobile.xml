@@ -16,6 +16,7 @@
     <string name="car_passenger_mode">Modo passageiro</string>
     <string name="car_passenger_mode_summary">Mostrar vídeo neste ecrã com o carro em andamento</string>
     <string name="car_list_empty">Ainda não há nada aqui.</string>
+    <string name="car_list_sign_in">Inicia sessão na NewTube no telemóvel para veres esta lista.</string>
     <string name="car_list_error">Não foi possível carregar esta lista. Verifica a ligação à internet do telemóvel.</string>
     <string name="car_play">Reproduzir</string>
     <string name="car_pause">Pausar</string>

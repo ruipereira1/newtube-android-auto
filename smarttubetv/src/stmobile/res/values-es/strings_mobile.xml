@@ -440,6 +440,7 @@
     <string name="car_passenger_mode">Modo pasajero</string>
     <string name="car_passenger_mode_summary">Mostrar vídeo en esta pantalla con el coche en marcha</string>
     <string name="car_list_empty">Todavía no hay nada aquí.</string>
+    <string name="car_list_sign_in">Inicia sesión en NewTube en el teléfono para ver esta lista.</string>
     <string name="car_list_error">No se pudo cargar esta lista. Comprueba la conexión a internet del teléfono.</string>
     <string name="car_play">Reproducir</string>
     <string name="car_pause">Pausar</string>

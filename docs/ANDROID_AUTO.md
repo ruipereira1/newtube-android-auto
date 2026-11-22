@@ -154,10 +154,12 @@ strip is the reliable path.
         <action android:name="androidx.car.app.CarAppService" />
         <category android:name="androidx.car.app.category.NAVIGATION" />
     </intent-filter>
-    <meta-data
-        android:name="androidx.car.app.minCarApiLevel"
-        android:value="1" />
 </service>
+
+<!-- Must be a child of <application>, not of <service>. -->
+<meta-data
+    android:name="androidx.car.app.minCarApiLevel"
+    android:value="1" />
 
 <meta-data
     android:name="com.google.android.gms.car.application"
@@ -260,7 +262,7 @@ tool; it is not a substitute for testing on the target car.
 | Symptom | Likely cause | What to check |
 |:--|:--|:--|
 | NewTube is not in the Android Auto launcher | Developer mode / unknown sources off; app installed for another user; stale Android Auto cache | Enable both settings; reinstall for the connected user; restart Android Auto and reconnect. |
-| The app opens with an error | Missing `NAVIGATION_TEMPLATES`; host rejects the template; Android Auto too old | Check the manifest with `aapt2`; update Android Auto; capture logcat. |
+| The app opens with an error | `minCarApiLevel` not declared at application level (log: `Min API level not declared in manifest`); missing `NAVIGATION_TEMPLATES`; Android Auto too old | Check the manifest with `aapt2 dump xmltree`; update Android Auto; capture logcat. |
 | The car screen stays black | No player, passenger mode off, or the host did not provide a surface | Start a video on the phone; check passenger mode; check `onSurfaceAvailable` in logcat. |
 | Video plays on the phone but not on the car | Surface not attached; host does not expose a surface; the car screen is in the background | Check `CarDisplayBridge.attachCarSurface`; bring the car app to the foreground; try a different car/AA version. |
 | The car controls do nothing | No active player; the host does not forward surface gestures | Use the action strip; start a video; check that the player is alive. |
@@ -291,12 +293,31 @@ adb -s DEVICE_SERIAL logcat -d | grep -a ...
   category, and a host may restrict it.
 - The car screen is a mirror of the phone's player, not an independent player. The phone must
   stay connected and the player must stay alive.
-- The host controls the surface size and aspect ratio; the app does not letterbox or rotate the
-  video itself.
+- The host controls the surface size and shape. The app does not rotate the video, but it does
+  keep the video's aspect ratio (see below).
 - Some Android Auto versions and some cars do not expose a surface to third-party template apps.
 - Passenger mode is a preference, not a legal permission. The driver is responsible for not
   watching video while driving.
 - Sideload only. There is no Play Store release.
+
+## Keeping the video's shape (letterbox)
+
+The host gives the app one surface the size of the whole car screen (800×400 on the desktop
+head unit, often wider in real cars). If the player drew straight into it, a 16:9 video would
+be stretched to fit.
+
+`CarLetterbox` avoids that:
+
+1. The host surface becomes a private `VirtualDisplay`.
+2. A `Presentation` on that display shows a black background.
+3. Inside it, an `AspectRatioFrameLayout` holds a `SurfaceView`, sized to the video's aspect
+   ratio and centred in the part of the screen the host leaves visible
+   (`SurfaceCallback.onVisibleAreaChanged`, which matters in split-screen layouts).
+4. The player draws into that `SurfaceView`.
+
+The aspect ratio is read from the player (`ExoPlayer.getVideoSize()`), so vertical videos work
+too. If a phone cannot create the virtual display, the screen falls back to the raw surface
+(the old, stretched behaviour) instead of failing.
 
 ## References
 

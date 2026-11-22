@@ -129,8 +129,11 @@ The manifest declares:
 - `androidx.car.app.NAVIGATION_TEMPLATES` — required by `NavigationTemplate`. Without it the
   host rejects the screen when the app is opened.
 - `com.newtube.mobile.car.NewTubeCarAppService` with the
-  `androidx.car.app.CarAppService` action, the `androidx.car.app.category.NAVIGATION`
-  category and `minCarApiLevel=1`.
+  `androidx.car.app.CarAppService` action and the `androidx.car.app.category.NAVIGATION`
+  category.
+- `androidx.car.app.minCarApiLevel=1` as **application** metadata (directly inside
+  `<application>`, not inside `<service>`). Android Auto only looks for it there; if it is
+  missing, the car screen shows "unexpected error" as soon as the app is opened.
 - `com.google.android.gms.car.application` metadata pointing to
   `res/xml/automotive_app_desc.xml`, which declares `<uses name="template" />`.
 
@@ -141,6 +144,7 @@ smarttubetv/src/stmobile/java/com/newtube/mobile/car/
   NewTubeCarAppService.java   CarAppService entry point
   NewTubeCarSession.java      one Android Auto session
   CarVideoScreen.java         NavigationTemplate + SurfaceCallback
+  CarLetterbox.java           keeps the video's shape (black bars instead of stretching)
   CarModePrefs.java           passenger-mode preference (default on)
 
 smarttubetv/src/stmobile/java/com/newtube/mobile/ui/playback/
@@ -172,6 +176,8 @@ smarttubetv/src/testStmobile/java/com/newtube/mobile/car/CarModePrefsTest.java
 
 ### The app opens with an error
 
+- If the log says `Min API level not declared in manifest`, the APK was built before this was
+  fixed. Install a build from the current code.
 - Confirm the installed APK contains both `androidx.car.app.ACCESS_SURFACE` and
   `androidx.car.app.NAVIGATION_TEMPLATES`.
 - Update Android Auto on the phone.
@@ -211,6 +217,8 @@ builds are signed with a local debug key, which can change between machines.
   not an independent player.
 - Some Android Auto hosts and some cars do not support third-party template apps with a
   surface. In that case the app can appear in the launcher but show a message or no video.
+- The video keeps its shape. On a screen with a different shape you will see black bars at
+  the sides or at the top and bottom; the picture is never stretched.
 - No Play Store distribution. Sideload only.
 
 ## Credits

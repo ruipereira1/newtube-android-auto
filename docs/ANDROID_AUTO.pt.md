@@ -88,6 +88,8 @@ Não precisa de carro nem de telemóvel.
 
 ### A app abre com erro
 
+- Se o registo disser `Min API level not declared in manifest`, o APK é anterior à correção.
+  Instala uma build feita com o código atual.
 - Confirma que o APK tem as permissões `androidx.car.app.ACCESS_SURFACE` e
   `androidx.car.app.NAVIGATION_TEMPLATES`. Sem a segunda, o `NavigationTemplate` é rejeitado.
 - Atualiza o Android Auto no telemóvel.
@@ -125,8 +127,8 @@ máquina.
   suportada. A Google ou o fabricante do carro podem restringir.
 - O carro é um segundo ecrã do leitor do telemóvel, não um leitor independente. O telemóvel tem
   de ficar ligado e o leitor tem de continuar vivo.
-- O tamanho e o formato da surface são controlados pelo carro; a app não faz letterboxing nem
-  roda o vídeo.
+- O tamanho e o formato do ecrã são do carro. A app não roda o vídeo, mas mantém a proporção:
+  em vez de esticar a imagem, mostra barras pretas nos lados ou em cima e em baixo.
 - Alguns carros e versões do Android Auto não expõem uma surface a apps de terceiros.
 - O modo passageiro é uma preferência, não uma autorização legal. O condutor é responsável por
   não ver vídeo enquanto conduz.

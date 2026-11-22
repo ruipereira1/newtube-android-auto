@@ -11,6 +11,7 @@ import androidx.car.app.AppManager;
 import androidx.car.app.CarContext;
 import androidx.car.app.Screen;
 import androidx.car.app.SurfaceCallback;
+import androidx.car.app.CarToast;
 import androidx.car.app.SurfaceContainer;
 import androidx.car.app.model.Action;
 import androidx.car.app.model.ActionStrip;
@@ -39,8 +40,9 @@ import java.util.Objects;
  * navigation apps. The surface is filled with the live NewTube player (not a map): the activity
  * that owns the player hands it over through {@link CarDisplayBridge}. The template's action
  * strip provides previous, play/pause, next and Menu ({@link CarMenuScreen}). A tap on the video
- * only brings the buttons back; a horizontal fling seeks by ten seconds on hosts that forward
- * surface gestures.</p>
+ * only brings the buttons back; a double tap on its right or left third skips forward or back
+ * 10 seconds (as on YouTube), and so does a horizontal fling, on hosts that forward surface
+ * gestures.</p>
  *
  * <p>Video is shown when the passenger mode switch is on ({@link CarModePrefs}). It is on by
  * default and can be turned off from Settings or from the car screen, in which case the screen
@@ -52,6 +54,8 @@ import java.util.Objects;
 public class CarVideoScreen extends Screen implements SurfaceCallback {
     private static final long SEEK_STEP_MS = 10_000;
     private static final long REFRESH_MS = 1_000;
+    /** Two taps closer than this are a double tap. */
+    private static final long DOUBLE_TAP_MS = 700;
 
     private final Handler mHandler = new Handler(Looper.getMainLooper());
     /** The surface the player draws into: the letterboxed video view, or the raw host surface. */
@@ -65,6 +69,13 @@ public class CarVideoScreen extends Screen implements SurfaceCallback {
     /** Part of the car screen not covered by the host's own UI; null until the host reports it. */
     @Nullable
     private Rect mVisibleArea;
+    /** Width of the host surface, to tell a tap on the left of the video from one on the right. */
+    private int mSurfaceWidth;
+    /** Double tap to seek, as on YouTube: the side (-1 left, +1 right) and time of the last tap. */
+    private int mLastTapSide;
+    private long mLastTapMs;
+    /** Seconds skipped by the current run of taps, shown in the toast ("+30 s"). */
+    private int mTapSeekSeconds;
     private boolean mStarted;
     private boolean mPolling;
     private boolean mLastPassengerMode;
@@ -314,6 +325,7 @@ public class CarVideoScreen extends Screen implements SurfaceCallback {
             releaseHostSurface();
         }
         mHostSurface = surface;
+        mSurfaceWidth = surfaceContainer.getWidth();
         try {
             mLetterbox = new CarLetterbox(getCarContext(), surface,
                     surfaceContainer.getWidth(), surfaceContainer.getHeight(),
@@ -366,9 +378,43 @@ public class CarVideoScreen extends Screen implements SurfaceCallback {
 
     @Override
     public void onClick(float x, float y) {
-        // A tap on the video is how people bring the buttons back, so it must not also pause
-        // (it used to). Pause and play are on the Pause/Play button.
+        // One tap only brings the buttons back (it must not pause or skip). Two quick taps on the
+        // right third of the video skip forward 10 s, on the left third back 10 s, and every
+        // further quick tap on the same side adds 10 s more - as on YouTube.
+        int side = tapSide(x);
+        long now = android.os.SystemClock.uptimeMillis();
+        boolean chained = side != 0 && side == mLastTapSide && now - mLastTapMs < DOUBLE_TAP_MS;
+        mLastTapSide = side;
+        mLastTapMs = now;
+
+        if (chained && CarDisplayBridge.getPlayer() != null) {
+            CarDisplayBridge.seekBy(side * SEEK_STEP_MS);
+            mTapSeekSeconds += (int) (SEEK_STEP_MS / 1000);
+            CarToast.makeText(getCarContext(),
+                    (side > 0 ? "+" : "\u2212") + mTapSeekSeconds + " s",
+                    CarToast.LENGTH_SHORT).show();
+        } else {
+            mTapSeekSeconds = 0;
+        }
         invalidate();
+    }
+
+    /** -1 for the left third of the video, +1 for the right third, 0 for the middle. */
+    private int tapSide(float x) {
+        float left = 0;
+        float right = mSurfaceWidth;
+        if (mVisibleArea != null && !mVisibleArea.isEmpty()) {
+            left = mVisibleArea.left;
+            right = mVisibleArea.right;
+        }
+        float third = (right - left) / 3f;
+        if (third <= 0) {
+            return 0;
+        }
+        if (x < left + third) {
+            return -1;
+        }
+        return x > right - third ? 1 : 0;
     }
 
     @Override

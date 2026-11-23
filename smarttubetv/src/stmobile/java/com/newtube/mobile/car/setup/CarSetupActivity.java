@@ -76,9 +76,8 @@ public class CarSetupActivity extends MobileActivity {
         });
         findViewById(R.id.car_setup_back).setOnClickListener(v -> finish());
         CarUpdates.clearDownload(this);
-        if (CarUpdates.isCheckDue(this)) {
-            check(false);
-        }
+        // Opened on purpose: always ask GitHub (a few KB), so the release shown is never stale.
+        check(false);
     }
 
     @Override

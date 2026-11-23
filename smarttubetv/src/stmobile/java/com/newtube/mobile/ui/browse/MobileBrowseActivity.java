@@ -1052,11 +1052,122 @@ public class MobileBrowseActivity extends MobileActivity
         if (header == null) {
             return;
         }
-        boolean show = !mYouShowing && mCurrentSectionId == MediaGroup.TYPE_HOME;
-        header.setVisibility(show ? View.VISIBLE : View.GONE);
-        if (show) {
+        boolean home = !mYouShowing && mCurrentSectionId == MediaGroup.TYPE_HOME;
+        boolean subs = !mYouShowing && mCurrentSectionId == MediaGroup.TYPE_SUBSCRIPTIONS;
+        header.setVisibility(home || subs ? View.VISIBLE : View.GONE);
+        findViewById(R.id.mobile_home_chips).setVisibility(home ? View.VISIBLE : View.GONE);
+        if (home) {
             buildHomeChips();
             bindResumeCard();
+        } else {
+            findViewById(R.id.mobile_home_resume).setVisibility(View.GONE);
+        }
+        View channels = findViewById(R.id.mobile_subs_channels_scroll);
+        if (subs) {
+            bindSubscribedChannels();
+        } else {
+            channels.setVisibility(View.GONE);
+        }
+    }
+
+    /** Subscribed channels, fetched once per app run (a small list; spares data on every visit). */
+    @Nullable private static List<Video> sSubscribedChannels;
+    @Nullable private io.reactivex.rxjava3.disposables.Disposable mChannelsLoad;
+
+    private void bindSubscribedChannels() {
+        View scroll = findViewById(R.id.mobile_subs_channels_scroll);
+        if (sSubscribedChannels != null) {
+            showSubscribedChannels(sSubscribedChannels);
+            return;
+        }
+        scroll.setVisibility(View.GONE);
+        if (mChannelsLoad != null && !mChannelsLoad.isDisposed()) {
+            return;
+        }
+        mChannelsLoad = io.reactivex.rxjava3.core.Observable.fromCallable(() -> {
+                    if (!com.liskovsoft.youtubeapi.service.YouTubeServiceManager.instance()
+                            .getSignInService().isSigned()) {
+                        return new ArrayList<Video>();
+                    }
+                    MediaGroup group = com.liskovsoft.youtubeapi.service.YouTubeServiceManager
+                            .instance().getContentService().getSubscribedChannelsByNewContent();
+                    List<Video> result = new ArrayList<>();
+                    if (group != null && group.getMediaItems() != null) {
+                        for (com.liskovsoft.mediaserviceinterfaces.data.MediaItem item
+                                : group.getMediaItems()) {
+                            if (item != null && result.size() < 30) {
+                                result.add(Video.from(item));
+                            }
+                        }
+                    }
+                    return result;
+                })
+                .subscribeOn(io.reactivex.rxjava3.schedulers.Schedulers.io())
+                .observeOn(io.reactivex.rxjava3.android.schedulers.AndroidSchedulers.mainThread())
+                .subscribe(list -> {
+                    sSubscribedChannels = list;
+                    if (!mYouShowing && mCurrentSectionId == MediaGroup.TYPE_SUBSCRIPTIONS) {
+                        showSubscribedChannels(list);
+                    }
+                }, error -> { /* no row: the feed below still works */ });
+    }
+
+    private void showSubscribedChannels(List<Video> channels) {
+        View scroll = findViewById(R.id.mobile_subs_channels_scroll);
+        LinearLayout row = findViewById(R.id.mobile_subs_channels);
+        if (channels.isEmpty()) {
+            scroll.setVisibility(View.GONE);
+            return;
+        }
+        scroll.setVisibility(View.VISIBLE);
+        if (row.getChildCount() == channels.size()) {
+            return; // already built
+        }
+        row.removeAllViews();
+        float density = getResources().getDisplayMetrics().density;
+        int avatar = Math.round(52 * density);
+        for (Video channel : channels) {
+            LinearLayout item = new LinearLayout(this);
+            item.setOrientation(LinearLayout.VERTICAL);
+            item.setGravity(android.view.Gravity.CENTER_HORIZONTAL);
+            int pad = Math.round(6 * density);
+            item.setPadding(pad, 0, pad, 0);
+            item.setBackgroundResource(R.drawable.bg_home_chip_ripple_round);
+
+            android.widget.FrameLayout frame = new android.widget.FrameLayout(this);
+            ImageView image = new ImageView(this);
+            image.setLayoutParams(new android.widget.FrameLayout.LayoutParams(avatar, avatar));
+            frame.addView(image);
+            if (channel.hasNewContent) {
+                View dot = new View(this);
+                int d = Math.round(10 * density);
+                android.widget.FrameLayout.LayoutParams lp =
+                        new android.widget.FrameLayout.LayoutParams(d, d);
+                lp.gravity = android.view.Gravity.TOP | android.view.Gravity.END;
+                dot.setLayoutParams(lp);
+                dot.setBackgroundResource(R.drawable.bg_subs_new_dot);
+                frame.addView(dot);
+            }
+            item.addView(frame);
+            if (!android.text.TextUtils.isEmpty(channel.cardImageUrl)) {
+                com.bumptech.glide.Glide.with(this).load(channel.cardImageUrl).circleCrop()
+                        .into(image);
+            }
+
+            TextView name = new TextView(this);
+            name.setText(channel.getAuthor() != null ? channel.getAuthor() : channel.title);
+            name.setTextSize(12);
+            name.setMaxLines(1);
+            name.setEllipsize(android.text.TextUtils.TruncateAt.END);
+            name.setGravity(android.view.Gravity.CENTER_HORIZONTAL);
+            name.setTextColor(getColorInt(R.color.mobile_color_on_surface));
+            name.setLayoutParams(new LinearLayout.LayoutParams(Math.round(68 * density),
+                    ViewGroup.LayoutParams.WRAP_CONTENT));
+            name.setPadding(0, Math.round(4 * density), 0, 0);
+            item.addView(name);
+
+            item.setOnClickListener(v -> onChannelAvatarClicked(channel));
+            row.addView(item);
         }
     }
 

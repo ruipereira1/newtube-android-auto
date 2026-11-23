@@ -104,6 +104,24 @@
 
         </HorizontalScrollView>
 
+        <!-- Subscriptions only: the subscribed channels, those with new videos first (dot). -->
+        <HorizontalScrollView
+            android:id="@+id/mobile_subs_channels_scroll"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:id="@+id/mobile_subs_channels"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="8dp" />
+
+        </HorizontalScrollView>
+
         <LinearLayout
             android:id="@+id/mobile_home_resume"
             android:layout_width="match_parent"

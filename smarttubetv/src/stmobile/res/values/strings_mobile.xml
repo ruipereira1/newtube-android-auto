@@ -563,4 +563,8 @@
     <string name="car_setup_notif_pairing">Pairing…</string>
     <string name="car_setup_notif_failed">Wrong code, or the code window closed. Open it again and type the new code.</string>
     <string name="car_setup_notif_done">Done. Tap Update on the install screen.</string>
+    <string name="car_setup_notif_searching">Waiting for the pairing code: in Wireless debugging, tap “Pair device with pairing code”.</string>
+    <string name="car_setup_notif_found">Code window found. Type the 6 digits in the NewTube notification.</string>
+    <string name="car_setup_notif_channel_status">Android Auto setup progress</string>
+    <string name="car_setup_local_network_needed">Allow access to devices on the local network: Wireless debugging is found through it.</string>
 </resources>

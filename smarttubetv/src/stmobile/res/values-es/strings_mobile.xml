@@ -512,4 +512,8 @@
     <string name="car_setup_notif_pairing">Vinculando…</string>
     <string name="car_setup_notif_failed">Código incorrecto, o se cerró la ventana del código. Ábrela otra vez y escribe el nuevo.</string>
     <string name="car_setup_notif_done">Hecho. Toca Actualizar en la pantalla de instalación.</string>
+    <string name="car_setup_notif_searching">Esperando el código: en Depuración inalámbrica, toca “Vincular dispositivo con código de vinculación”.</string>
+    <string name="car_setup_notif_found">Ventana del código encontrada. Escribe los 6 dígitos en la notificación de NewTube.</string>
+    <string name="car_setup_notif_channel_status">Progreso de la activación en Android Auto</string>
+    <string name="car_setup_local_network_needed">Permite el acceso a dispositivos de la red local: por ahí se encuentra la Depuración inalámbrica.</string>
 </resources>

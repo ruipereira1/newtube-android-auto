@@ -29,7 +29,7 @@ import java.io.File;
  * The work is {@link CarSetup} (the shell steps) and {@link CarUpdates} (GitHub releases).
  */
 public class CarSetupActivity extends MobileActivity {
-    private static final int REQUEST_NOTIFICATIONS = 7301;
+    private static final int REQUEST_PERMISSIONS = 7301;
 
     private final Handler mMain = new Handler(Looper.getMainLooper());
     private ImageView mStatusIcon;
@@ -134,26 +134,37 @@ public class CarSetupActivity extends MobileActivity {
             Toast.makeText(this, R.string.car_setup_wifi_needed, Toast.LENGTH_LONG).show();
             return;
         }
+        java.util.List<String> missing = new java.util.ArrayList<>();
         if (Build.VERSION.SDK_INT >= 33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)
                 != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, REQUEST_NOTIFICATIONS);
+            missing.add(Manifest.permission.POST_NOTIFICATIONS);
+        }
+        if (!CarSetup.hasLocalNetwork(this)) {
+            missing.add(CarSetup.LOCAL_NETWORK);
+        }
+        if (!missing.isEmpty()) {
+            requestPermissions(missing.toArray(new String[0]), REQUEST_PERMISSIONS);
             return;
         }
-        CarSetupReceiver.askForCode(this, false);
+        CarPairingService.start(this);
         openWirelessDebugging();
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] results) {
         super.onRequestPermissionsResult(requestCode, permissions, results);
-        if (requestCode != REQUEST_NOTIFICATIONS) {
+        if (requestCode != REQUEST_PERMISSIONS) {
             return;
         }
-        if (results.length > 0 && results[0] == PackageManager.PERMISSION_GRANTED) {
-            startPairing();
-        } else {
-            Toast.makeText(this, R.string.car_setup_notifications_needed, Toast.LENGTH_LONG).show();
+        for (int i = 0; i < permissions.length; i++) {
+            if (results.length > i && results[i] != PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, CarSetup.LOCAL_NETWORK.equals(permissions[i])
+                        ? R.string.car_setup_local_network_needed : R.string.car_setup_notifications_needed,
+                        Toast.LENGTH_LONG).show();
+                return;
+            }
         }
+        startPairing();
     }
 
     /** Developer options, scrolled to Wireless debugging where the phone supports it. */
@@ -202,6 +213,10 @@ public class CarSetupActivity extends MobileActivity {
     private void run(@Nullable CarUpdates.Release release) {
         if (!CarSetup.isOnWifi(this)) {
             Toast.makeText(this, R.string.car_setup_wifi_needed, Toast.LENGTH_LONG).show();
+            return;
+        }
+        if (!CarSetup.hasLocalNetwork(this)) {
+            requestPermissions(new String[]{CarSetup.LOCAL_NETWORK}, REQUEST_PERMISSIONS + 1);
             return;
         }
         Context app = getApplicationContext();
@@ -259,6 +274,8 @@ public class CarSetupActivity extends MobileActivity {
                 return R.string.car_setup_wifi_needed;
             case CarSetup.PAIR:
                 return R.string.car_setup_pair_again;
+            case CarSetup.LOCAL_NETWORK_DENIED:
+                return R.string.car_setup_local_network_needed;
             default:
                 return R.string.car_setup_turn_on_wireless;
         }

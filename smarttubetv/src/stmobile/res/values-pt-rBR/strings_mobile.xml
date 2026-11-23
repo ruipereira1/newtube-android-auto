@@ -88,4 +88,8 @@
     <string name="car_setup_notif_pairing">Pareando…</string>
     <string name="car_setup_notif_failed">Código errado, ou a janela do código fechou. Abra de novo e digite o código novo.</string>
     <string name="car_setup_notif_done">Pronto. Toque em Atualizar na tela de instalação.</string>
+    <string name="car_setup_notif_searching">Esperando o código: na Depuração por Wi-Fi, toque em “Parear o dispositivo com um código de pareamento”.</string>
+    <string name="car_setup_notif_found">Encontrei a janela do código. Digite os 6 dígitos na notificação do NewTube.</string>
+    <string name="car_setup_notif_channel_status">Progresso da ativação no Android Auto</string>
+    <string name="car_setup_local_network_needed">Permita o acesso a dispositivos na rede local: é por aí que a Depuração por Wi-Fi é encontrada.</string>
 </resources>

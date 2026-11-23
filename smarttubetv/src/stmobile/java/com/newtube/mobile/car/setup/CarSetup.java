@@ -66,6 +66,8 @@ public final class CarSetup {
     public static final int CONNECT_WIFI = 3;
     /** The pairing code dialog wasn't open, or the code was wrong. */
     public static final int PAIRING_FAILED = 4;
+    /** Android 16+: the local-network permission was refused. */
+    public static final int LOCAL_NETWORK_DENIED = 5;
 
     public interface Progress {
         void onStep(@NonNull String step);
@@ -122,19 +124,48 @@ public final class CarSetup {
         }
     }
 
+    /** Local-network access, which Android 16+ asks for: mDNS to find Wireless debugging's ports. */
+    public static final String LOCAL_NETWORK = "android.permission.ACCESS_LOCAL_NETWORK";
+
+    public static boolean hasLocalNetwork(@NonNull Context context) {
+        return Build.VERSION.SDK_INT < 36
+                || context.checkSelfPermission(LOCAL_NETWORK) == PackageManager.PERMISSION_GRANTED;
+    }
+
     /**
      * Pairs with the phone's Wireless debugging using the six-digit code from its "Pair device
-     * with pairing code" dialog, which must be open: the pairing port exists only while it is.
+     * with pairing code" dialog, on the pairing port {@link CarPairingService} found while that
+     * dialog is open. Loopback first, as the port belongs to this very phone.
      */
     @WorkerThread
-    public static void pair(@NonNull Context context, @NonNull String code) throws Exception {
-        if (!isOnWifi(context)) {
-            throw new NeedsPerson(CONNECT_WIFI);
+    public static void pair(@NonNull Context context, @Nullable InetAddress host, int port, @NonNull String code)
+            throws Exception {
+        NewTubeAdb adb = NewTubeAdb.get(context);
+        Exception last = null;
+        for (String address : new String[]{"127.0.0.1", host != null ? host.getHostAddress() : null}) {
+            if (address == null) {
+                continue;
+            }
+            try {
+                adb.pair(address, port, code.trim());
+                prefs(context).edit().putBoolean(KEY_PAIRED, true).apply();
+                return;
+            } catch (Exception e) {
+                last = e;
+            }
         }
+        throw last != null ? last : new NeedsPerson(PAIRING_FAILED);
+    }
+
+    /** Finds a Wireless debugging port by mDNS: _adb-tls-pairing or _adb-tls-connect. */
+    @WorkerThread
+    @Nullable
+    static InetSocketAddressCompat discover(@NonNull Context context, @NonNull String type, long timeoutMs)
+            throws InterruptedException {
         AtomicReference<InetAddress> host = new AtomicReference<>();
         AtomicInteger port = new AtomicInteger(-1);
         CountDownLatch found = new CountDownLatch(1);
-        AdbMdns mdns = new AdbMdns(context, AdbMdns.SERVICE_TYPE_TLS_PAIRING, (address, p) -> {
+        AdbMdns mdns = new AdbMdns(context, type, (address, p) -> {
             if (address != null && p > 0) {
                 host.set(address);
                 port.set(p);
@@ -143,18 +174,41 @@ public final class CarSetup {
         });
         mdns.start();
         try {
-            if (!found.await(15, TimeUnit.SECONDS)) {
-                throw new NeedsPerson(PAIRING_FAILED);
-            }
+            return found.await(timeoutMs, TimeUnit.MILLISECONDS)
+                    ? new InetSocketAddressCompat(host.get(), port.get()) : null;
         } finally {
             mdns.stop();
         }
-        try {
-            NewTubeAdb.get(context).pair(host.get().getHostAddress(), port.get(), code.trim());
-        } catch (Exception e) {
-            throw new NeedsPerson(PAIRING_FAILED);
+    }
+
+    static final class InetSocketAddressCompat {
+        final InetAddress host;
+        final int port;
+
+        InetSocketAddressCompat(InetAddress host, int port) {
+            this.host = host;
+            this.port = port;
         }
-        prefs(context).edit().putBoolean(KEY_PAIRED, true).apply();
+    }
+
+    /** Connects to Wireless debugging (loopback first), or false when it isn't advertising. */
+    @WorkerThread
+    private static boolean connect(@NonNull Context context, @NonNull NewTubeAdb adb, long timeoutMs)
+            throws Exception {
+        if (adb.isConnected()) {
+            return true;
+        }
+        InetSocketAddressCompat target = discover(context, AdbMdns.SERVICE_TYPE_TLS_CONNECT, timeoutMs);
+        if (target == null) {
+            return false;
+        }
+        try {
+            return adb.connect("127.0.0.1", target.port);
+        } catch (AdbPairingRequiredException e) {
+            throw e;
+        } catch (Exception loopbackRefused) {
+            return adb.connect(target.host.getHostAddress(), target.port);
+        }
     }
 
     /**
@@ -168,6 +222,9 @@ public final class CarSetup {
                                @NonNull Progress progress) throws Exception {
         if (!isOnWifi(context)) {
             throw new NeedsPerson(CONNECT_WIFI);
+        }
+        if (!hasLocalNetwork(context)) {
+            throw new NeedsPerson(LOCAL_NETWORK_DENIED);
         }
         if (!isPaired(context)) {
             throw new NeedsPerson(PAIR);
@@ -186,7 +243,7 @@ public final class CarSetup {
         try {
             // Wireless debugging needs a few seconds to start and advertise its port; on a network
             // it hasn't seen, the phone first asks whether to allow it there.
-            connected = adb.isConnected() || adb.connectTls(context, 25_000);
+            connected = connect(context, adb, 25_000);
         } catch (AdbPairingRequiredException e) {
             prefs(context).edit().putBoolean(KEY_PAIRED, false).apply();
             throw new NeedsPerson(PAIR);

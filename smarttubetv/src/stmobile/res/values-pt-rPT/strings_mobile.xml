@@ -448,4 +448,8 @@
     <string name="car_setup_notif_pairing">A emparelhar…</string>
     <string name="car_setup_notif_failed">Código errado, ou a janela do código fechou. Abre-a outra vez e escreve o código novo.</string>
     <string name="car_setup_notif_done">Feito. Toca em Atualizar no ecrã de instalação.</string>
+    <string name="car_setup_notif_searching">À espera do código: na Depuração sem fios, toca em “Sincronizar dispositivo com código”.</string>
+    <string name="car_setup_notif_found">Encontrei a janela do código. Escreve os 6 dígitos na notificação da NewTube.</string>
+    <string name="car_setup_notif_channel_status">Progresso da ativação no Android Auto</string>
+    <string name="car_setup_local_network_needed">Permite o acesso a dispositivos na rede local: é por aí que a Depuração sem fios é encontrada.</string>
 </resources>

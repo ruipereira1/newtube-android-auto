@@ -217,9 +217,10 @@
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|layoutDirection|keyboardHidden|uiMode"
             android:screenOrientation="unspecified"
             android:theme="@style/Theme.NewTube" />
-        <receiver
-            android:name="com.newtube.mobile.car.setup.CarSetupReceiver"
-            android:exported="false" />
+        <service
+            android:name="com.newtube.mobile.car.setup.CarPairingService"
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
 
         <activity
             android:name="com.newtube.mobile.ui.update.MobileUpdateActivity"

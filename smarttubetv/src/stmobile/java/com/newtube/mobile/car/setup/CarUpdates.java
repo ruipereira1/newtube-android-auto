@@ -27,7 +27,7 @@ import java.nio.charset.StandardCharsets;
  * This fork's releases on GitHub: the latest tag, and its APK for this phone.
  *
  * <p>Light on data: the check is one small JSON request (a few KB), at most once a day on its
- * own; the APK (~25 MB) is downloaded only when the person taps Update, and only on Wi-Fi -
+ * own; the APK (~60 MB) is downloaded only when the person taps Update, and only on Wi-Fi -
  * Wireless debugging, which installs it, needs Wi-Fi anyway.</p>
  */
 public final class CarUpdates {

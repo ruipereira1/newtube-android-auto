@@ -577,7 +577,7 @@
     <string name="car_guide_3_title">Ask for a pairing code</string>
     <string name="car_guide_3_text">Tap Start. Wireless debugging opens: tap “Pair device with pairing code”.</string>
     <string name="car_guide_4_title">Type the code in the NewTube notification</string>
-    <string name="car_guide_4_text">Leave the code on screen. Pull down the notifications and type the 6 digits in the NewTube notification.</string>
-    <string name="car_guide_5_title">Tap Install</string>
-    <string name="car_guide_5_text">Google Play Protect checks the app for a few seconds; then tap Install (or Update). NewTube closes and comes back ready for Android Auto. Done: updates are one tap from now on.</string>
+    <string name="car_guide_4_text">When the NewTube notification appears on top, tap Code and type the 6 digits. Leave the code window open.</string>
+    <string name="car_guide_5_title">Tap Update</string>
+    <string name="car_guide_5_text">Tap Update. If Google Play Protect asks, tap Scan app and then Install (if it warns about unknown apps, tap Continue). NewTube closes and comes back ready for Android Auto. Done: from now on updates take one tap.</string>
 </resources>

@@ -1121,9 +1121,8 @@ public class MobileBrowseActivity extends MobileActivity
     }
 
     /**
-     * Opens the channel page. These items carry the channel's latest video too, so the generic
-     * card route would play that video; with the channel id at hand the page opens directly
-     * (no lookup), otherwise the card-avatar route finds the channel.
+     * Opens the channel. With the channel id at hand the channel page opens directly (no
+     * lookup); the usual items have no id but carry the channel's uploads, which open as a list.
      */
     private void openSubscribedChannel(Video channel) {
         if (channel.channelId != null) {
@@ -1132,6 +1131,13 @@ public class MobileBrowseActivity extends MobileActivity
                             .instance(this);
             presenter.setChannel(channel); // its id wins over a previous channel's
             presenter.openChannel(channel.channelId);
+        } else if (channel.hasNestedItems()) {
+            // YouTube's subscriptions list gives these as tabs with the channel's uploads but no
+            // channel id: open the uploads, as the Channels section does (the avatar route
+            // would look for an id that isn't there and do nothing).
+            com.liskovsoft.smartyoutubetv2.common.misc.NetPath.log("subs-row open uploads");
+            com.liskovsoft.smartyoutubetv2.common.app.presenters.ChannelUploadsPresenter
+                    .instance(this).openChannel(channel);
         } else {
             onChannelAvatarClicked(channel);
         }

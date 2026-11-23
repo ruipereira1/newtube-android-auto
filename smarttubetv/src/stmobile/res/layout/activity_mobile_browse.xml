@@ -73,6 +73,110 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/mobile_title_bar" />
 
+    <!-- NEWTUBE(home-header): on Home only - topic chips (open the Live, Gaming, News, Music,
+         Sports sections) and a "Continue watching" card for the last video left half way. GONE
+         elsewhere; a GONE view collapses to its top anchor, so the feed then starts right under
+         the title bar exactly as before. Wired in MobileBrowseActivity.updateHomeHeader(). -->
+    <LinearLayout
+        android:id="@+id/mobile_home_header"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="?attr/newtubeColorBackground"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/mobile_title_bar"
+        tools:visibility="visible">
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:id="@+id/mobile_home_chips"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="6dp" />
+
+        </HorizontalScrollView>
+
+        <LinearLayout
+            android:id="@+id/mobile_home_resume"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="12dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/bg_watch_card"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="8dp"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <ImageView
+                android:id="@+id/mobile_home_resume_thumb"
+                android:layout_width="112dp"
+                android:layout_height="63dp"
+                android:contentDescription="@null"
+                android:scaleType="centerCrop" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="@string/car_continue_watching"
+                    android:textColor="@color/mobile_color_primary"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/mobile_home_resume_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:textColor="@color/mobile_color_on_surface"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/mobile_home_resume_left"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:maxLines="1"
+                    android:textColor="@color/mobile_color_on_surface_secondary"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+            <ImageButton
+                android:id="@+id/mobile_home_resume_close"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/mobile_sheet_close"
+                android:padding="10dp"
+                android:src="@drawable/ic_home_close"
+                android:tint="@color/mobile_color_on_surface_secondary" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
     <!-- Pull-to-refresh drives BrowsePresenter.refresh() - also the natural retry
          gesture when a section shows the error placeholder (the error overlay doesn't
          consume touches, so the pull still reaches this layout). -->
@@ -83,7 +187,7 @@
         app:layout_constraintBottom_toTopOf="@id/mobile_bottom_nav"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/mobile_title_bar">
+        app:layout_constraintTop_toBottomOf="@id/mobile_home_header">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/mobile_content_grid"
@@ -105,7 +209,7 @@
         app:layout_constraintBottom_toTopOf="@id/mobile_bottom_nav"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/mobile_title_bar" />
+        app:layout_constraintTop_toBottomOf="@id/mobile_home_header" />
 
     <!--
          The empty/error placeholder is anchored to the title bar / bottom nav / parent
@@ -127,7 +231,7 @@
         app:layout_constraintBottom_toTopOf="@id/mobile_bottom_nav"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/mobile_title_bar">
+        app:layout_constraintTop_toBottomOf="@id/mobile_home_header">
 
         <ImageView
             android:id="@+id/mobile_error_icon"

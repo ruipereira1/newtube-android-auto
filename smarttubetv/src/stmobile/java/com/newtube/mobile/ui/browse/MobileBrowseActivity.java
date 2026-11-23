@@ -166,6 +166,8 @@ public class MobileBrowseActivity extends MobileActivity
     private boolean mYouShowing;
     /** True when the current grid section was opened from a You-panel row (back returns to You). */
     private boolean mSectionFromYou;
+    /** NEWTUBE(home-header): a topic opened from a Home chip (back arrow, back goes Home). */
+    private boolean mSectionFromChip;
     private BrowseTopBar mTopBar;
     private View mErrorContainer;
     private ImageView mErrorIcon;
@@ -958,6 +960,7 @@ public class MobileBrowseActivity extends MobileActivity
             showYouPanel();
         } else {
             mSectionFromYou = false;
+            mSectionFromChip = false;
             hideYouPanel();
             onSectionChosen(itemId - ITEM_ID_OFFSET);
         }
@@ -998,6 +1001,7 @@ public class MobileBrowseActivity extends MobileActivity
     private void showYouPanel() {
         mYouShowing = true;
         mSectionFromYou = false;
+        mSectionFromChip = false;
         rebuildYouRows();
         updateAccountRow();
         mContentSwipe.setRefreshing(false);
@@ -1025,9 +1029,139 @@ public class MobileBrowseActivity extends MobileActivity
         mFeedSkeleton.setImportantForAccessibility(a11y);
         mErrorContainer.setImportantForAccessibility(a11y);
 
-        boolean subScreen = mSectionFromYou && !mYouShowing
+        boolean subScreen = (mSectionFromYou || mSectionFromChip) && !mYouShowing
                 && mBottomNav.getMenu().findItem(toMenuItemId(mCurrentSectionId)) == null;
         mTopBar.show(subScreen, getCurrentSectionTitle());
+        updateHomeHeader();
+    }
+
+    // ---------------------------------------------------------------------------------
+    // Home header (NEWTUBE(home-header)): topic chips + "Continue watching"
+    // ---------------------------------------------------------------------------------
+
+    /** Topic sections offered as chips on Home, in this order, when the section is enabled. */
+    private static final int[] HOME_CHIP_SECTIONS = {
+            MediaGroup.TYPE_LIVE, MediaGroup.TYPE_MUSIC, MediaGroup.TYPE_NEWS,
+            MediaGroup.TYPE_GAMING, MediaGroup.TYPE_SPORTS};
+    /** The "Continue watching" card was closed: not again until the app restarts. */
+    private static boolean sResumeDismissed;
+
+    /** Shows the header on Home only (not in You, not on other sections) and refreshes it. */
+    private void updateHomeHeader() {
+        View header = findViewById(R.id.mobile_home_header);
+        if (header == null) {
+            return;
+        }
+        boolean show = !mYouShowing && mCurrentSectionId == MediaGroup.TYPE_HOME;
+        header.setVisibility(show ? View.VISIBLE : View.GONE);
+        if (show) {
+            buildHomeChips();
+            bindResumeCard();
+        }
+    }
+
+    private void buildHomeChips() {
+        LinearLayout row = findViewById(R.id.mobile_home_chips);
+        row.removeAllViews();
+        addHomeChip(row, getString(R.string.car_home_all), true, null);
+        for (int type : HOME_CHIP_SECTIONS) {
+            for (BrowseSection section : mSections) {
+                if (section.getId() == type && section.isEnabled()) {
+                    int id = section.getId();
+                    addHomeChip(row, section.getTitle(), false, () -> {
+                        // A sub-screen with a back arrow and its name; back returns Home.
+                        mSectionFromChip = true;
+                        onSectionChosen(id);
+                        onYouPanelToggled();
+                    });
+                    break;
+                }
+            }
+        }
+    }
+
+    private void addHomeChip(LinearLayout row, CharSequence text, boolean selected,
+            @Nullable Runnable action) {
+        float density = getResources().getDisplayMetrics().density;
+        TextView chip = new TextView(this);
+        chip.setText(text);
+        chip.setTextSize(14);
+        chip.setTypeface(android.graphics.Typeface.create("sans-serif-medium",
+                android.graphics.Typeface.NORMAL));
+        chip.setTextColor(selected ? getColorInt(R.color.mobile_color_background)
+                : getColorInt(R.color.mobile_color_on_surface));
+        chip.setBackgroundResource(selected ? R.drawable.bg_home_chip_selected
+                : R.drawable.bg_home_chip);
+        int padH = Math.round(14 * density);
+        int padV = Math.round(7 * density);
+        chip.setPadding(padH, padV, padH, padV);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.setMarginEnd(Math.round(8 * density));
+        chip.setLayoutParams(lp);
+        if (action != null) {
+            chip.setOnClickListener(v -> action.run());
+        }
+        row.addView(chip);
+    }
+
+    /** "Continue watching": the last video left half way, from what the phone remembers. */
+    private void bindResumeCard() {
+        View card = findViewById(R.id.mobile_home_resume);
+        com.liskovsoft.smartyoutubetv2.common.app.models.playback.service.VideoStateService.State
+                state = sResumeDismissed ? null : lastUnfinished();
+        if (state == null) {
+            card.setVisibility(View.GONE);
+            return;
+        }
+        card.setVisibility(View.VISIBLE);
+        ((TextView) findViewById(R.id.mobile_home_resume_title)).setText(state.video.title);
+        long leftSec = Math.max(0, state.durationMs - state.positionMs) / 1000;
+        String left = leftSec >= 3600
+                ? String.format(java.util.Locale.ROOT, "%d:%02d:%02d", leftSec / 3600,
+                        (leftSec / 60) % 60, leftSec % 60)
+                : String.format(java.util.Locale.ROOT, "%d:%02d", leftSec / 60, leftSec % 60);
+        String author = state.video.getAuthor();
+        String leftText = getString(R.string.car_time_left, left);
+        ((TextView) findViewById(R.id.mobile_home_resume_left)).setText(
+                android.text.TextUtils.isEmpty(author) ? leftText : author + " \u00b7 " + leftText);
+        ImageView thumb = findViewById(R.id.mobile_home_resume_thumb);
+        if (!android.text.TextUtils.isEmpty(state.video.cardImageUrl)) {
+            com.bumptech.glide.Glide.with(this).load(state.video.cardImageUrl).centerCrop()
+                    .into(thumb);
+        } else {
+            thumb.setImageDrawable(null);
+        }
+        Video video = state.video;
+        card.setOnClickListener(v -> onVideoClicked(video));
+        findViewById(R.id.mobile_home_resume_close).setOnClickListener(v -> {
+            sResumeDismissed = true;
+            card.setVisibility(View.GONE);
+        });
+    }
+
+    @Nullable
+    private com.liskovsoft.smartyoutubetv2.common.app.models.playback.service.VideoStateService.State
+            lastUnfinished() {
+        List<com.liskovsoft.smartyoutubetv2.common.app.models.playback.service.VideoStateService.State>
+                states;
+        try {
+            states = com.liskovsoft.smartyoutubetv2.common.app.models.playback.service
+                    .VideoStateService.instance(this).getStates();
+        } catch (RuntimeException e) {
+            return null;
+        }
+        for (int i = states.size() - 1; i >= 0; i--) {
+            com.liskovsoft.smartyoutubetv2.common.app.models.playback.service.VideoStateService.State
+                    state = states.get(i);
+            if (state != null && state.video != null && state.video.videoId != null
+                    && !android.text.TextUtils.isEmpty(state.video.title)
+                    && state.durationMs > 0 && state.positionMs >= 30_000
+                    && state.positionMs < state.durationMs * 0.95f) {
+                return state;
+            }
+        }
+        return null;
     }
 
     /**
@@ -1105,7 +1239,7 @@ public class MobileBrowseActivity extends MobileActivity
         // NEWTUBE(android-auto): the car switches, without going into Settings.
         addYouGroupLabel(getString(R.string.car_you_group));
         addYouSwitchRow(R.drawable.ic_car, getString(R.string.car_passenger_mode),
-                getString(R.string.car_passenger_mode_summary),
+                getString(R.string.car_you_passenger_summary),
                 () -> com.newtube.mobile.car.CarModePrefs.isPassengerModeEnabled(this),
                 on -> com.newtube.mobile.car.CarModePrefs.setPassengerModeEnabled(this, on));
         addYouSwitchRow(R.drawable.ic_player_queue, getString(R.string.car_lists_grid),
@@ -1318,6 +1452,7 @@ public class MobileBrowseActivity extends MobileActivity
      * already on its way; {@link #mAwaitingFreshContent} makes its result replace this.
      */
     private void paintCachedSnapshot(int sectionId, boolean switched) {
+        updateHomeHeader();
         // The error overlay (e.g. the previous section's sign-in gate) belongs to the section
         // that showed it - a switch repaints, so drop it here. updateSection can't be relied on
         // for this: a fresh-within-TTL section skips the refetch and never emits a group.

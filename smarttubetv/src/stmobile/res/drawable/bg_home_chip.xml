@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Home topic chip (Live, Gaming, News, ...): rounded surface pill with a ripple. -->
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="?android:attr/colorControlHighlight">
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="?attr/newtubeColorCard" />
+            <corners android:radius="10dp" />
+        </shape>
+    </item>
+</ripple>

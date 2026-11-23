@@ -62,14 +62,19 @@ final class CarThumbnails {
     @NonNull
     static Bitmap decorate(@NonNull Bitmap source, @NonNull Video video, float watched,
             @NonNull String liveLabel) {
-        Bitmap bitmap = source.copy(Bitmap.Config.ARGB_8888, true);
+        // The car draws list and grid images in a square box: a 16:9 picture ends up a thin strip
+        // in the middle. The centre square of it fills the box (the labels go on after the crop).
+        int side = Math.min(source.getWidth(), source.getHeight());
+        Bitmap square = Bitmap.createBitmap(source, (source.getWidth() - side) / 2,
+                (source.getHeight() - side) / 2, side, side);
+        Bitmap bitmap = square.copy(Bitmap.Config.ARGB_8888, true);
         if (bitmap == null) {
             return source;
         }
         Canvas canvas = new Canvas(bitmap);
         float width = bitmap.getWidth();
         float height = bitmap.getHeight();
-        float unit = height / 180f; // sizes below are for a 320x180 picture
+        float unit = height / 180f; // sizes below are for a 180-pixel-high picture
 
         boolean hasBar = watched > 0 && !video.isLive;
         float barHeight = 8 * unit;

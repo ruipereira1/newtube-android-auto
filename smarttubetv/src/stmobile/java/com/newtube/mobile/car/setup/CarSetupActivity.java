@@ -105,7 +105,7 @@ public class CarSetupActivity extends MobileActivity {
 
         StringBuilder version = new StringBuilder(getString(R.string.car_setup_version,
                 installed.isEmpty() ? getString(R.string.car_setup_version_local) : installed));
-        if (latest != null && !latest.tag.equals(installed)) {
+        if (latest != null && CarUpdates.isNewerThanInstalled(latest.tag)) {
             version.append('\n').append(getString(R.string.car_setup_latest, latest.tag));
         } else if (latest != null) {
             version.append('\n').append(getString(R.string.car_setup_up_to_date));

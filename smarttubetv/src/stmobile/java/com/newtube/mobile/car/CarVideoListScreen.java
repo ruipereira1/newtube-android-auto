@@ -266,6 +266,9 @@ public class CarVideoListScreen extends Screen {
     /** "Watched 13:02 of 31:16" / "Watched to the end", from what the phone remembers. */
     @Nullable
     private String watchedText(Video video) {
+        if (video.isLive) {
+            return null; // a live stream's position isn't progress: no "watched to the end"
+        }
         VideoStateService.State state = CarThumbnails.state(getCarContext(), video);
         if (state == null || state.durationMs <= 0 || state.positionMs <= 0) {
             return null;

@@ -1293,6 +1293,7 @@ public class MobileBrowseActivity extends MobileActivity
 
             if (state != null && state.video != null && state.video.videoId != null
                     && !android.text.TextUtils.isEmpty(state.video.title)
+                    && !state.video.isLive
                     && state.durationMs > 0 && state.positionMs >= 30_000
                     && state.positionMs < state.durationMs * 0.95f) {
                 return state;

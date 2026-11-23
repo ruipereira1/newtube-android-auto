@@ -166,6 +166,7 @@ public class CarMenuScreen extends Screen {
             VideoStateService.State state = states.get(i);
             if (state == null || state.video == null || state.video.videoId == null
                     || TextUtils.isEmpty(state.video.title) || state.durationMs <= 0
+                    || state.video.isLive // a live stream has no "where you stopped"
                     || state.positionMs < 30_000
                     || state.positionMs >= state.durationMs * CarThumbnails.WATCHED_TO_END
                     || Objects.equals(state.video.videoId, currentId)) {

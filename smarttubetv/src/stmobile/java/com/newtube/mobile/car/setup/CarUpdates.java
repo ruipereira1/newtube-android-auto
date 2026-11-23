@@ -38,6 +38,7 @@ public final class CarUpdates {
     private static final String KEY_LATEST_URL = "latest_url";
     private static final String KEY_LATEST_SIZE = "latest_size";
     private static final String KEY_CHECKED_AT = "checked_at";
+    private static final String KEY_CHECKED_BY = "checked_by";
     private static final long DAY = 24L * 3600_000L;
 
     public static final class Release {
@@ -74,15 +75,58 @@ public final class CarUpdates {
         return tag != null && url != null ? new Release(tag, url, p.getLong(KEY_LATEST_SIZE, -1)) : null;
     }
 
-    /** True when the last release seen is not this build (a computer build never counts as old). */
+    /**
+     * True when the last release seen is newer than this build (a computer build never counts as
+     * old). Newer, not just different: a release seen before this build was installed is older.
+     */
     public static boolean hasUpdate(@NonNull Context context) {
         Release latest = cached(context);
         String installed = installedTag();
-        return latest != null && !installed.isEmpty() && !latest.tag.equals(installed);
+        return latest != null && !installed.isEmpty() && compareTags(latest.tag, installed) > 0;
+    }
+
+    /** True when the release seen is newer than this build, or this is a computer build. */
+    public static boolean isNewerThanInstalled(@NonNull String tag) {
+        String installed = installedTag();
+        return installed.isEmpty() || compareTags(tag, installed) > 0;
+    }
+
+    /** Orders auto-v1.17.1-4 style tags by their numbers; anything unreadable sorts first. */
+    static int compareTags(@NonNull String a, @NonNull String b) {
+        long[] x = numbers(a);
+        long[] y = numbers(b);
+        for (int i = 0; i < Math.max(x.length, y.length); i++) {
+            long p = i < x.length ? x[i] : 0;
+            long q = i < y.length ? y[i] : 0;
+            if (p != q) {
+                return p < q ? -1 : 1;
+            }
+        }
+        return 0;
+    }
+
+    private static long[] numbers(String tag) {
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile("\\d+").matcher(tag);
+        java.util.List<Long> out = new java.util.ArrayList<>();
+        while (m.find()) {
+            try {
+                out.add(Long.parseLong(m.group()));
+            } catch (NumberFormatException e) {
+                out.add(0L);
+            }
+        }
+        long[] result = new long[out.size()];
+        for (int i = 0; i < result.length; i++) {
+            result[i] = out.get(i);
+        }
+        return result;
     }
 
     public static boolean isCheckDue(@NonNull Context context) {
-        return System.currentTimeMillis() - prefs(context).getLong(KEY_CHECKED_AT, 0) > DAY;
+        SharedPreferences p = prefs(context);
+        // A check made before this build was installed says nothing about it: check again.
+        return !installedTag().equals(p.getString(KEY_CHECKED_BY, ""))
+                || System.currentTimeMillis() - p.getLong(KEY_CHECKED_AT, 0) > DAY;
     }
 
     /** Asks GitHub for the latest release. */
@@ -117,6 +161,7 @@ public final class CarUpdates {
                     .putString(KEY_LATEST_URL, url)
                     .putLong(KEY_LATEST_SIZE, size)
                     .putLong(KEY_CHECKED_AT, System.currentTimeMillis())
+                    .putString(KEY_CHECKED_BY, installedTag())
                     .apply();
             return new Release(tag, url, size);
         } catch (org.json.JSONException e) {

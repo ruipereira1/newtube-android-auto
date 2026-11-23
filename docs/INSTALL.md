@@ -13,7 +13,7 @@ This guide is for everyone, no technical knowledge needed. It takes about 10 min
 
 ## What you need
 
-- An **Android phone** (Android 7 or newer).
+- An **Android phone** (Android 7 or newer; setting it up without a computer needs Android 11).
 - A **car with Android Auto** (with a cable or wireless).
 - The **Android Auto** app on the phone (most phones already have it).
 
@@ -32,16 +32,40 @@ This guide is for everyone, no technical knowledge needed. It takes about 10 min
 3. Tap **Install**.
 4. If **Google Play Protect** shows a warning, tap **More details → Install anyway**.
 
-## Step 3 — Let Android Auto show the app
+## Step 3 — Turn it on for Android Auto (once)
 
-Android Auto hides apps that do not come from Google Play unless you allow them. You only do
-this once.
+Android Auto only lists apps that look like they came from Google Play. NewTube can reinstall
+itself that way from the phone itself, with no cable or computer. It needs **Android 11 or
+newer** and **Wi-Fi**, takes about a minute and is done once.
 
-1. Open the phone's **Settings** and search for **Android Auto**. Open it.
-2. Scroll to the bottom and tap **Version** **10 times**, until a message asks to turn on
-   developer settings. Tap **OK**.
-3. Tap the **⋮** menu at the top right, then **Developer settings**.
-4. Turn on **Unknown sources**.
+Open NewTube and go to **You → Android Auto**. The app shows these steps (Portuguese screens
+below) and moves on by itself:
+
+1. **Turn on Developer options:** in **About phone**, tap **Build number** 7 times.
+
+   <img src="images/android-auto/setup-1.webp" width="360" alt="About phone with Build number ringed">
+
+2. **Turn on Wireless debugging** in Developer options. If asked, allow it on this network.
+
+   <img src="images/android-auto/setup-2.webp" width="360" alt="Developer options with Wireless debugging ringed">
+
+3. In NewTube tap **Start**. In Wireless debugging, tap **Pair device with pairing code** and
+   leave the code on screen.
+
+   <img src="images/android-auto/setup-3.webp" width="360" alt="Wireless debugging with Pair device with pairing code ringed">
+
+4. A NewTube notification appears: tap **Code** and type the 6 digits. (If it is gone, pull down
+   the notifications.)
+
+   <img src="images/android-auto/setup-4.webp" width="360" alt="NewTube's notification over the pairing code dialog">
+
+5. Tap **Update**. If Google Play Protect asks, tap **Scan app** and then **Install**.
+
+   <img src="images/android-auto/setup-5.webp" width="360" alt="Update this app, then Play Protect's Install">
+
+Done: **You → Android Auto** says **Ready**.
+
+<img src="images/android-auto/setup-ready.webp" width="360" alt="NewTube's Android Auto screen: ready, Android Auto shows NewTube on the car screen">
 
 ## Step 4 — Use it in the car
 
@@ -70,29 +94,21 @@ this once.
 
 ## NewTube does not appear in the car?
 
-On many phones, Android Auto only shows apps that look as if they came from Google Play, even
-after Step 3. A computer fixes this in a couple of minutes:
-
-1. On the phone, turn on **USB debugging**:
-   **Settings → About phone →** tap **Build number** 7 times, then
-   **Settings → System → Developer options → USB debugging**.
-2. On the computer, open the
-   **[latest version](https://github.com/ruipereira1/newtube-android-auto/releases/latest)**
-   and download **NewTube-Android-Auto-computer-installer.zip**. Unzip it.
-3. Connect the phone to the computer with a USB cable.
-4. **Windows:** double-click **Install.bat**.
-   **Mac or Linux:** open a terminal in the folder and run `./install.sh`.
-5. On the phone, tap **Allow** (USB debugging) and then **Install** / **Update**.
-
-When the window says **Done**, reconnect the phone to the car. Use the same installer for every
-update.
+- Check that **You → Android Auto** says **Ready**. If not, do Step 3.
+- Android 10 or older, or no Wi-Fi? Use a computer:
+  1. On the phone, turn on **USB debugging**: **Settings → About phone →** tap **Build number**
+     7 times, then **Developer options → USB debugging**.
+  2. On the computer, open **[newtube-auto-instalar.netlify.app](https://newtube-auto-instalar.netlify.app)**
+     in Chrome or Edge, connect the phone with a cable and follow the steps. Or use
+     **NewTube-Android-Auto-computer-installer.zip** from the
+     [latest release](https://github.com/ruipereira1/newtube-android-auto/releases/latest).
+  3. On the phone, tap **Allow** (USB debugging) and then **Install** / **Update**.
 
 ## Updating
 
-Download the new version from the
-[latest release](https://github.com/ruipereira1/newtube-android-auto/releases/latest) and install
-it the same way. It installs over the old one and keeps your settings. (The app does not update
-itself.)
+In **You → Android Auto**, when there is a new version, tap **Update** (on Wi-Fi). No code and no
+need to turn on Wireless debugging: the app turns it on, installs and turns it off again. Then
+tap **Update** on the install screen. Your settings stay.
 
 Had an early test version of NewTube for Android Auto? It is a separate app: after installing
 this one, uninstall the old one so you don't have two NewTube icons.

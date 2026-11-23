@@ -13,7 +13,7 @@ Este guia é para toda a gente, não é preciso saber nada de técnico. Demora u
 
 ## O que precisas
 
-- Um **telemóvel Android** (Android 7 ou mais recente).
+- Um **telemóvel Android** (Android 7 ou mais recente; a ativação sem computador precisa de Android 11).
 - Um **carro com Android Auto** (com cabo ou sem fios).
 - A app **Android Auto** no telemóvel (a maioria dos telemóveis já a tem).
 
@@ -32,16 +32,44 @@ Este guia é para toda a gente, não é preciso saber nada de técnico. Demora u
 3. Toca em **Instalar**.
 4. Se o **Google Play Protect** mostrar um aviso, toca em **Mais detalhes → Instalar mesmo assim**.
 
-## Passo 3 — Deixar o Android Auto mostrar a app
+## Passo 3 — Ativar no Android Auto (uma vez só)
 
-O Android Auto esconde as apps que não vêm da Google Play, a não ser que as autorizes. Só
-fazes isto uma vez.
+O Android Auto só mostra apps que pareçam vir da Google Play. A NewTube consegue reinstalar-se
+assim a partir do próprio telemóvel, sem cabo nem computador. Precisa de **Android 11 ou mais
+recente** e de **Wi-Fi**. Demora cerca de um minuto e só se faz uma vez.
 
-1. Abre as **Definições** do telemóvel e procura **Android Auto**. Abre.
-2. Desce até ao fim e toca **10 vezes** em **Versão**, até aparecer uma mensagem a perguntar se
-   queres ativar as definições de programador. Toca em **OK**.
-3. Toca no menu **⋮** no canto superior direito e depois em **Definições de programador**.
-4. Ativa **Fontes desconhecidas**.
+Abre a NewTube e vai a **Tu → Android Auto**. A app mostra estes passos e avança sozinha:
+
+1. **Ativa as Opções de programador:** em **Acerca do telemóvel**, toca 7 vezes em **Número de
+   compilação** (pode pedir o PIN).
+
+   <img src="images/android-auto/setup-1.webp" width="360" alt="Acerca do telemóvel, com Número de compilação assinalado">
+
+2. **Liga a Depuração sem fios** nas Opções de programador. Se perguntar, permite nesta rede.
+
+   <img src="images/android-auto/setup-2.webp" width="360" alt="Opções de programador, com Depuração sem fios assinalada">
+
+3. Na NewTube toca em **Começar**. Na Depuração sem fios, toca em **Sincronize dispositivo com
+   código de sincronização** e deixa o código no ecrã.
+
+   <img src="images/android-auto/setup-3.webp" width="360" alt="Depuração sem fios, com Sincronize dispositivo com código de sincronização assinalado">
+
+4. Aparece uma notificação da NewTube: toca em **Código** e escreve os 6 dígitos. (Se a
+   notificação já tiver desaparecido, puxa a barra de notificações.)
+
+   <img src="images/android-auto/setup-4.webp" width="360" alt="A notificação da NewTube por cima da janela do código">
+
+5. Toca em **Atualizar**. Se o Google Play Protect pedir, toca em **Analisar app** e depois em
+   **Instalar**.
+
+   <img src="images/android-auto/setup-5.webp" width="360" alt="Atualizar esta app e o Instalar do Play Protect">
+
+Pronto: em **Tu → Android Auto** aparece **Pronta**.
+
+<img src="images/android-auto/setup-ready.webp" width="360" alt="Ecrã Android Auto da NewTube: Pronta, o Android Auto mostra a NewTube no ecrã do carro">
+
+*Os menus mudam de marca para marca: num Samsung o Número de compilação está em Informações do
+software; num Xiaomi toca na versão do MIUI/HyperOS.*
 
 ## Passo 4 — Usar no carro
 
@@ -69,29 +97,21 @@ fazes isto uma vez.
 
 ## O NewTube não aparece no carro?
 
-Em muitos telemóveis, o Android Auto só mostra apps que pareçam vir da Google Play, mesmo
-depois do Passo 3. Com um computador resolve-se em dois minutos:
-
-1. No telemóvel, ativa a **depuração USB**:
-   **Definições → Acerca do telemóvel →** toca 7 vezes em **Número da compilação**, e depois
-   **Definições → Sistema → Opções de programador → Depuração USB**.
-2. No computador, abre a
-   **[versão mais recente](https://github.com/ruipereira1/newtube-android-auto/releases/latest)**
-   e descarrega **NewTube-Android-Auto-computer-installer.zip**. Descomprime-o.
-3. Liga o telemóvel ao computador com um cabo USB.
-4. **Windows:** faz duplo clique em **Install.bat**.
-   **Mac ou Linux:** abre um terminal na pasta e escreve `./install.sh`.
-5. No telemóvel, toca em **Permitir** (depuração USB) e depois em **Instalar** / **Atualizar**.
-
-Quando a janela disser **Done**, volta a ligar o telemóvel ao carro. Usa o mesmo instalador em
-todas as atualizações.
+- Confirma que em **Tu → Android Auto** aparece **Pronta**. Se não, faz o Passo 3.
+- Telemóvel com Android 10 ou mais antigo, ou sem Wi-Fi? Usa o computador:
+  1. No telemóvel, ativa a **depuração USB**: **Definições → Acerca do telemóvel →** toca 7
+     vezes em **Número de compilação**, e depois **Opções de programador → Depuração USB**.
+  2. No computador, abre **[newtube-auto-instalar.netlify.app](https://newtube-auto-instalar.netlify.app)**
+     no Chrome ou no Edge, liga o telemóvel por cabo e segue os passos. Também podes usar o
+     **NewTube-Android-Auto-computer-installer.zip** da
+     [versão mais recente](https://github.com/ruipereira1/newtube-android-auto/releases/latest).
+  3. No telemóvel, toca em **Permitir** (depuração USB) e depois em **Instalar** / **Atualizar**.
 
 ## Atualizar
 
-Descarrega a versão nova da
-[versão mais recente](https://github.com/ruipereira1/newtube-android-auto/releases/latest) e
-instala da mesma maneira. Instala por cima da antiga e mantém as tuas definições. (A app não se
-atualiza sozinha.)
+Em **Tu → Android Auto**, quando houver versão nova, toca em **Atualizar** (por Wi-Fi). Não
+precisas de código nem de ligar a Depuração sem fios: a app liga-a, instala e desliga-a no fim.
+Depois toca em **Atualizar** no ecrã de instalação. As tuas definições ficam.
 
 Tinhas uma versão de teste antiga do NewTube para Android Auto? É uma app separada: depois de
 instalares esta, desinstala a antiga para não ficares com dois ícones do NewTube.

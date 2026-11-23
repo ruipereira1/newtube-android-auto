@@ -77,23 +77,28 @@ phone's language). Video: "Big Buck Bunny" © Blender Foundation, CC BY 3.0.*
 In short:
 
 1. On the phone, download **NewTube-Android-Auto-arm64-v8a.apk** from the
-   [latest release](https://github.com/ruipereira1/newtube-android-auto/releases/latest) and
-   install it.
-2. In **Android Auto** settings, tap **Version** ten times, then
-   **⋮ → Developer settings → Unknown sources** on.
+   [latest release](https://github.com/ruipereira1/newtube-android-auto/releases/latest) (or from
+   [newtube-auto-instalar.netlify.app](https://newtube-auto-instalar.netlify.app)) and install it.
+2. Open NewTube, go to **You → Android Auto** and follow the five steps: the app pairs once with
+   the phone's own Wireless debugging and reinstalls itself the way Android Auto expects (as if it
+   came from Google Play). Android 11+ and Wi-Fi; no cable, no computer.
 3. In the car, open **NewTube**, tap **Menu** and pick a video.
 
-If NewTube does not appear in the car, install it with the computer installer from the same
-release (`NewTube-Android-Auto-computer-installer.zip`, double-click `Install.bat`). It installs
-the app the way Android Auto expects (as if it came from Google Play). The scripts are in
+| | | |
+|:-:|:-:|:-:|
+| <img src="docs/images/android-auto/setup-3.webp" width="240" alt="Pair device with pairing code"> | <img src="docs/images/android-auto/setup-4.webp" width="240" alt="Type the code in NewTube's notification"> | <img src="docs/images/android-auto/setup-ready.webp" width="240" alt="Ready"> |
+
+After that, updates are one tap in **You → Android Auto**. Android 10 or older: use the computer
+installer from the same release (`NewTube-Android-Auto-computer-installer.zip`, double-click
+`Install.bat`) or the web installer above with a USB cable. The scripts are in
 [`scripts/android-auto/`](scripts/android-auto/).
 
 Passenger mode is switched on and off at the bottom of the car **Menu**, or on the phone in
 **Settings → Android Auto passenger mode**.
 
 The app is `io.github.aleixrodriala.arc.auto`, so it installs next to upstream NewTube instead
-of replacing it. It does not update itself: new versions come from this repository's releases,
-all signed with the same key. Maintainers: see [docs/RELEASING.md](docs/RELEASING.md).
+of replacing it. New versions come from this repository's releases, all signed with the same
+key, and install from **You → Android Auto**. Maintainers: see [docs/RELEASING.md](docs/RELEASING.md).
 
 ## Build
 

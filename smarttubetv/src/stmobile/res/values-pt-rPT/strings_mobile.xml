@@ -463,6 +463,6 @@
     <string name="car_guide_3_text">Toca em Começar. Abre-se a Depuração sem fios: toca em “Sincronize dispositivo com código de sincronização”.</string>
     <string name="car_guide_4_title">Escreve o código na notificação da NewTube</string>
     <string name="car_guide_4_text">Deixa o código no ecrã. Puxa as notificações e escreve os 6 dígitos na notificação da NewTube.</string>
-    <string name="car_guide_5_title">Toca em Atualizar</string>
-    <string name="car_guide_5_text">Abre-se o ecrã de instalação: toca em Atualizar. A NewTube fecha e volta pronta para o Android Auto. Feito: daqui para a frente as atualizações são um toque.</string>
+    <string name="car_guide_5_title">Toca em Instalar</string>
+    <string name="car_guide_5_text">O Google Play Protect verifica a app durante uns segundos; depois toca em Instalar (ou Atualizar). A NewTube fecha e volta pronta para o Android Auto. Feito: daqui para a frente as atualizações são um toque.</string>
 </resources>

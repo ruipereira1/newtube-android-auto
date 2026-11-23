@@ -116,10 +116,27 @@ public final class CarSetup {
         return caps != null && caps.hasTransport(NetworkCapabilities.TRANSPORT_WIFI);
     }
 
+    /**
+     * What the setting says - but recent Android versions answer 0 to apps for the developer
+     * settings, so a 0 means "maybe off". {@link #isWirelessDebuggingAdvertised} is the real check.
+     */
     static boolean isWirelessDebuggingOn(@NonNull Context context) {
         try {
             return Settings.Global.getInt(context.getContentResolver(), ADB_WIFI, 0) == 1;
         } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /** Wireless debugging is on when its connect port is advertised on this network (mDNS). */
+    @WorkerThread
+    public static boolean isWirelessDebuggingAdvertised(@NonNull Context context, long timeoutMs) {
+        if (!hasLocalNetwork(context) || !isOnWifi(context)) {
+            return false;
+        }
+        try {
+            return discover(context, AdbMdns.SERVICE_TYPE_TLS_CONNECT, timeoutMs) != null;
+        } catch (InterruptedException e) {
             return false;
         }
     }
@@ -231,7 +248,7 @@ public final class CarSetup {
         }
         NewTubeAdb adb = NewTubeAdb.get(context);
         boolean switched = canSwitchWirelessDebugging(context);
-        if (!isWirelessDebuggingOn(context)) {
+        if (!isWirelessDebuggingOn(context) && !isWirelessDebuggingAdvertised(context, 2_000)) {
             if (!switched) {
                 throw new NeedsPerson(TURN_ON_WIRELESS_DEBUGGING);
             }

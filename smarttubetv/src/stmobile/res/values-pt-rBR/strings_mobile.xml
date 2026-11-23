@@ -103,6 +103,6 @@
     <string name="car_guide_3_text">Toque em Começar. Abre a Depuração por Wi-Fi: toque em “Parear o dispositivo com um código de pareamento”.</string>
     <string name="car_guide_4_title">Digite o código na notificação do NewTube</string>
     <string name="car_guide_4_text">Deixe o código na tela. Puxe as notificações e digite os 6 dígitos na notificação do NewTube.</string>
-    <string name="car_guide_5_title">Toque em Atualizar</string>
-    <string name="car_guide_5_text">Abre a tela de instalação: toque em Atualizar. O NewTube fecha e volta pronto para o Android Auto. Pronto: daqui em diante as atualizações são um toque.</string>
+    <string name="car_guide_5_title">Toque em Instalar</string>
+    <string name="car_guide_5_text">O Google Play Protect verifica o app por alguns segundos; depois toque em Instalar (ou Atualizar). O NewTube fecha e volta pronto para o Android Auto. Pronto: daqui em diante as atualizações são um toque.</string>
 </resources>

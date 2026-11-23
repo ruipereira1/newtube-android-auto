@@ -44,6 +44,11 @@ public class CarSetupActivity extends MobileActivity {
     private MaterialButton mRepair;
     /** "Pair again" was tapped: show the guide although a pairing exists. */
     private boolean mRepairing;
+    /** Wireless debugging was found advertising (so Developer options are on too). */
+    private boolean mWirelessSeen;
+    private boolean mLooking;
+    /** Developer options can't be read: steps 1 and 2 are both open. */
+    private boolean mDevUnknown;
     private volatile boolean mWorking;
     private boolean mChecking;
 
@@ -79,6 +84,7 @@ public class CarSetupActivity extends MobileActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        mWirelessSeen = false;
         bind();
     }
 
@@ -150,10 +156,27 @@ public class CarSetupActivity extends MobileActivity {
      * next one is open.
      */
     private void bindGuide() {
+        // Android 17 answers 0 to apps for these settings, so "0" only means "not known to be on";
+        // a short mDNS look for Wireless debugging (below) settles it and redraws the guide.
         boolean devOn = Settings.Global.getInt(getContentResolver(),
                 Settings.Global.DEVELOPMENT_SETTINGS_ENABLED, 0) == 1;
-        boolean wirelessOn = CarSetup.isWirelessDebuggingOn(this);
-        int current = !devOn ? 1 : !wirelessOn ? 2 : 3;
+        boolean wirelessOn = mWirelessSeen || CarSetup.isWirelessDebuggingOn(this);
+        int current = wirelessOn ? 3 : devOn ? 2 : 1;
+        mDevUnknown = !devOn && !wirelessOn;
+        if (!wirelessOn && !mLooking) {
+            mLooking = true;
+            Context app = getApplicationContext();
+            new Thread(() -> {
+                boolean seen = CarSetup.isWirelessDebuggingAdvertised(app, 2_500);
+                mMain.post(() -> {
+                    mLooking = false;
+                    if (seen && !mWirelessSeen && !isFinishing()) {
+                        mWirelessSeen = true;
+                        bind();
+                    }
+                });
+            }, "car-setup-look").start();
+        }
         mStepList.removeAllViews();
         addStep(1, current, R.string.car_guide_1_title, R.string.car_guide_1_text, R.drawable.guia_1_compilacao,
                 R.string.car_guide_1_action, () -> openSettings(Settings.ACTION_DEVICE_INFO_SETTINGS));
@@ -163,7 +186,8 @@ public class CarSetupActivity extends MobileActivity {
                 R.string.car_setup_action_start, this::startPairing);
         addStep(4, current, R.string.car_guide_4_title, R.string.car_guide_4_text, R.drawable.guia_4_janela,
                 0, null);
-        addStep(5, current, R.string.car_guide_5_title, R.string.car_guide_5_text, 0, 0, null);
+        addStep(5, current, R.string.car_guide_5_title, R.string.car_guide_5_text, R.drawable.guia_5_instalar,
+                0, null);
     }
 
     private void addStep(int number, int current, int title, int text, int image, int action,
@@ -171,7 +195,8 @@ public class CarSetupActivity extends MobileActivity {
         View card = getLayoutInflater().inflate(R.layout.item_car_setup_step, mStepList, false);
         boolean done = number < current;
         // From step 3 on everything happens in Settings, so steps 3-5 are all shown up front.
-        boolean open = number == current || (current >= 3 && number > current);
+        boolean open = number == current || (current >= 3 && number > current)
+                || (mDevUnknown && number == 2);
         TextView badge = card.findViewById(R.id.car_step_number);
         badge.setText(done ? "\u2713" : String.valueOf(number));
         ((TextView) card.findViewById(R.id.car_step_title)).setText(title);
@@ -187,7 +212,7 @@ public class CarSetupActivity extends MobileActivity {
             picture.setVisibility(View.GONE);
         }
         MaterialButton button = card.findViewById(R.id.car_step_action);
-        if (number == current && onAction != null) {
+        if ((number == current || (mDevUnknown && number == 2)) && onAction != null) {
             button.setText(action);
             button.setOnClickListener(v -> onAction.run());
             button.setVisibility(View.VISIBLE);
@@ -295,7 +320,7 @@ public class CarSetupActivity extends MobileActivity {
             return;
         }
         Context app = getApplicationContext();
-        boolean leaveOn = CarSetup.isWirelessDebuggingOn(app);
+        boolean leaveOnRead = CarSetup.isWirelessDebuggingOn(app);
         mWorking = true;
         mPrimary.setEnabled(false);
         mSecondary.setEnabled(false);
@@ -309,6 +334,8 @@ public class CarSetupActivity extends MobileActivity {
                             }
                         })
                         : new File(app.getApplicationInfo().sourceDir);
+                // On before we started = the person uses it: leave it on afterwards.
+                boolean leaveOn = leaveOnRead || CarSetup.isWirelessDebuggingAdvertised(app, 2_000);
                 CarSetup.install(app, apk, leaveOn, step -> showFromWorker(stepText(step)));
             } catch (CarSetup.NeedsPerson e) {
                 showFromWorker(getString(needsText(e.what)));

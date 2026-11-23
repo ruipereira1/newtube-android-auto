@@ -1174,7 +1174,8 @@ public class MobileBrowseActivity extends MobileActivity
             name.setPadding(0, Math.round(4 * density), 0, 0);
             item.addView(name);
 
-            item.setOnClickListener(v -> onChannelAvatarClicked(channel));
+            // The same route as a channel card in the Channels section.
+            item.setOnClickListener(v -> onVideoClicked(channel));
             row.addView(item);
         }
     }
@@ -1270,15 +1271,10 @@ public class MobileBrowseActivity extends MobileActivity
         } catch (RuntimeException e) {
             return null;
         }
-        android.util.Log.d("NewTubeHome", "resume: " + states.size() + " remembered videos");
         for (int i = states.size() - 1; i >= 0; i--) {
             com.liskovsoft.smartyoutubetv2.common.app.models.playback.service.VideoStateService.State
                     state = states.get(i);
-            if (i >= states.size() - 5 && state != null && state.video != null) {
-                android.util.Log.d("NewTubeHome", "resume: #" + i + " id=" + state.video.videoId
-                        + " title=" + !android.text.TextUtils.isEmpty(state.video.title)
-                        + " pos=" + state.positionMs + " len=" + state.durationMs);
-            }
+
             if (state != null && state.video != null && state.video.videoId != null
                     && !android.text.TextUtils.isEmpty(state.video.title)
                     && state.durationMs > 0 && state.positionMs >= 30_000

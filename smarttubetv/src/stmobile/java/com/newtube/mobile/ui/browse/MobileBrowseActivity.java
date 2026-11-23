@@ -1120,6 +1120,23 @@ public class MobileBrowseActivity extends MobileActivity
                 }, error -> { /* no row: the feed below still works */ });
     }
 
+    /**
+     * Opens the channel page. These items carry the channel's latest video too, so the generic
+     * card route would play that video; with the channel id at hand the page opens directly
+     * (no lookup), otherwise the card-avatar route finds the channel.
+     */
+    private void openSubscribedChannel(Video channel) {
+        if (channel.channelId != null) {
+            com.liskovsoft.smartyoutubetv2.common.app.presenters.ChannelPresenter presenter =
+                    com.liskovsoft.smartyoutubetv2.common.app.presenters.ChannelPresenter
+                            .instance(this);
+            presenter.setChannel(channel); // its id wins over a previous channel's
+            presenter.openChannel(channel.channelId);
+        } else {
+            onChannelAvatarClicked(channel);
+        }
+    }
+
     private void showSubscribedChannels(List<Video> channels) {
         View scroll = findViewById(R.id.mobile_subs_channels_scroll);
         LinearLayout row = findViewById(R.id.mobile_subs_channels);
@@ -1174,8 +1191,7 @@ public class MobileBrowseActivity extends MobileActivity
             name.setPadding(0, Math.round(4 * density), 0, 0);
             item.addView(name);
 
-            // The same route as a channel card in the Channels section.
-            item.setOnClickListener(v -> onVideoClicked(channel));
+            item.setOnClickListener(v -> openSubscribedChannel(channel));
             row.addView(item);
         }
     }

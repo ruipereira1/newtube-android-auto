@@ -1092,11 +1092,19 @@ public class MobileBrowseActivity extends MobileActivity
                     MediaGroup group = com.liskovsoft.youtubeapi.service.YouTubeServiceManager
                             .instance().getContentService().getSubscribedChannelsByNewContent();
                     List<Video> result = new ArrayList<>();
+                    java.util.Set<String> seen = new java.util.HashSet<>();
                     if (group != null && group.getMediaItems() != null) {
                         for (com.liskovsoft.mediaserviceinterfaces.data.MediaItem item
                                 : group.getMediaItems()) {
-                            if (item != null && result.size() < 30) {
-                                result.add(Video.from(item));
+                            if (item == null || result.size() >= 30) {
+                                continue;
+                            }
+                            Video channel = Video.from(item);
+                            // YouTube can list a channel twice: keep the first (newest) one.
+                            String key = channel.channelId != null ? channel.channelId
+                                    : String.valueOf(channel.getAuthor());
+                            if (seen.add(key)) {
+                                result.add(channel);
                             }
                         }
                     }
@@ -1262,9 +1270,15 @@ public class MobileBrowseActivity extends MobileActivity
         } catch (RuntimeException e) {
             return null;
         }
+        android.util.Log.d("NewTubeHome", "resume: " + states.size() + " remembered videos");
         for (int i = states.size() - 1; i >= 0; i--) {
             com.liskovsoft.smartyoutubetv2.common.app.models.playback.service.VideoStateService.State
                     state = states.get(i);
+            if (i >= states.size() - 5 && state != null && state.video != null) {
+                android.util.Log.d("NewTubeHome", "resume: #" + i + " id=" + state.video.videoId
+                        + " title=" + !android.text.TextUtils.isEmpty(state.video.title)
+                        + " pos=" + state.positionMs + " len=" + state.durationMs);
+            }
             if (state != null && state.video != null && state.video.videoId != null
                     && !android.text.TextUtils.isEmpty(state.video.title)
                     && state.durationMs > 0 && state.positionMs >= 30_000

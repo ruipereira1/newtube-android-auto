@@ -40,6 +40,10 @@ public class CarSetupActivity extends MobileActivity {
     private MaterialButton mPrimary;
     private MaterialButton mSecondary;
     private View mSteps;
+    private android.widget.LinearLayout mStepList;
+    private MaterialButton mRepair;
+    /** "Pair again" was tapped: show the guide although a pairing exists. */
+    private boolean mRepairing;
     private volatile boolean mWorking;
     private boolean mChecking;
 
@@ -59,6 +63,12 @@ public class CarSetupActivity extends MobileActivity {
         mPrimary = findViewById(R.id.car_setup_primary);
         mSecondary = findViewById(R.id.car_setup_secondary);
         mSteps = findViewById(R.id.car_setup_steps_box);
+        mStepList = findViewById(R.id.car_setup_steps);
+        mRepair = findViewById(R.id.car_setup_repair);
+        mRepair.setOnClickListener(v -> {
+            mRepairing = true;
+            bind();
+        });
         findViewById(R.id.car_setup_back).setOnClickListener(v -> finish());
         CarUpdates.clearDownload(this);
         if (CarUpdates.isCheckDue(this)) {
@@ -96,7 +106,12 @@ public class CarSetupActivity extends MobileActivity {
         }
         mVersion.setText(version);
 
-        mSteps.setVisibility(supported && !paired ? View.VISIBLE : View.GONE);
+        boolean guide = supported && (!paired || mRepairing);
+        mSteps.setVisibility(guide ? View.VISIBLE : View.GONE);
+        mRepair.setVisibility(supported && paired && !mRepairing ? View.VISIBLE : View.GONE);
+        if (guide) {
+            bindGuide();
+        }
         mSecondary.setVisibility(View.GONE);
         mPrimary.setEnabled(supported && !mChecking);
         if (!supported) {
@@ -105,9 +120,9 @@ public class CarSetupActivity extends MobileActivity {
         }
         mPrimary.setVisibility(View.VISIBLE);
 
-        if (!paired) {
-            mPrimary.setText(R.string.car_setup_action_start);
-            mPrimary.setOnClickListener(v -> startPairing());
+        if (guide) {
+            // The guide's own step buttons lead; nothing else competes with them.
+            mPrimary.setVisibility(View.GONE);
             return;
         }
         if (CarUpdates.hasUpdate(this)) {
@@ -126,6 +141,66 @@ public class CarSetupActivity extends MobileActivity {
             mSecondary.setVisibility(View.VISIBLE);
             mSecondary.setText(getString(R.string.car_setup_action_install_published, latest.tag));
             mSecondary.setOnClickListener(v -> update(latest));
+        }
+    }
+
+    /**
+     * The one-time setup as steps with the real screens. It moves on by itself: coming back from
+     * Settings, the steps already done (Developer options, Wireless debugging) are ticked and the
+     * next one is open.
+     */
+    private void bindGuide() {
+        boolean devOn = Settings.Global.getInt(getContentResolver(),
+                Settings.Global.DEVELOPMENT_SETTINGS_ENABLED, 0) == 1;
+        boolean wirelessOn = CarSetup.isWirelessDebuggingOn(this);
+        int current = !devOn ? 1 : !wirelessOn ? 2 : 3;
+        mStepList.removeAllViews();
+        addStep(1, current, R.string.car_guide_1_title, R.string.car_guide_1_text, R.drawable.guia_1_compilacao,
+                R.string.car_guide_1_action, () -> openSettings(Settings.ACTION_DEVICE_INFO_SETTINGS));
+        addStep(2, current, R.string.car_guide_2_title, R.string.car_guide_2_text, R.drawable.guia_2_sem_fios,
+                R.string.car_guide_2_action, this::openWirelessDebugging);
+        addStep(3, current, R.string.car_guide_3_title, R.string.car_guide_3_text, R.drawable.guia_3_codigo,
+                R.string.car_setup_action_start, this::startPairing);
+        addStep(4, current, R.string.car_guide_4_title, R.string.car_guide_4_text, R.drawable.guia_4_janela,
+                0, null);
+        addStep(5, current, R.string.car_guide_5_title, R.string.car_guide_5_text, 0, 0, null);
+    }
+
+    private void addStep(int number, int current, int title, int text, int image, int action,
+                         @Nullable Runnable onAction) {
+        View card = getLayoutInflater().inflate(R.layout.item_car_setup_step, mStepList, false);
+        boolean done = number < current;
+        // From step 3 on everything happens in Settings, so steps 3-5 are all shown up front.
+        boolean open = number == current || (current >= 3 && number > current);
+        TextView badge = card.findViewById(R.id.car_step_number);
+        badge.setText(done ? "\u2713" : String.valueOf(number));
+        ((TextView) card.findViewById(R.id.car_step_title)).setText(title);
+        TextView body = card.findViewById(R.id.car_step_text);
+        body.setText(text);
+        body.setVisibility(done ? View.GONE : View.VISIBLE);
+        ImageView picture = card.findViewById(R.id.car_step_image);
+        if (open && image != 0) {
+            picture.setImageResource(image);
+            picture.setClipToOutline(true);
+            picture.setVisibility(View.VISIBLE);
+        } else {
+            picture.setVisibility(View.GONE);
+        }
+        MaterialButton button = card.findViewById(R.id.car_step_action);
+        if (number == current && onAction != null) {
+            button.setText(action);
+            button.setOnClickListener(v -> onAction.run());
+            button.setVisibility(View.VISIBLE);
+        }
+        card.setAlpha(open || done ? 1f : 0.55f);
+        mStepList.addView(card);
+    }
+
+    private void openSettings(String action) {
+        try {
+            startActivity(new Intent(action).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+        } catch (ActivityNotFoundException e) {
+            startActivity(new Intent(Settings.ACTION_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         }
     }
 

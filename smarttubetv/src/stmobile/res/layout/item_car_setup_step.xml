@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A step of the Android Auto setup guide: number (or a check once done), what to do, and the
+     real screen with the place to tap ringed. Filled in CarSetupActivity.bindGuide(). -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="12dp"
+    android:background="@drawable/bg_car_setup_card"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/car_step_number"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="@drawable/bg_car_step_number"
+            android:gravity="center"
+            android:textColor="#0E1A3A"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/car_step_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="14dp"
+            android:layout_weight="1"
+            android:textColor="@color/mobile_color_on_surface"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/car_step_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="46dp"
+        android:layout_marginTop="6dp"
+        android:lineSpacingExtra="2dp"
+        android:textColor="@color/mobile_color_on_surface_secondary"
+        android:textSize="14sp" />
+
+    <ImageView
+        android:id="@+id/car_step_image"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:adjustViewBounds="true"
+        android:background="@drawable/bg_car_step_image"
+        android:contentDescription="@null"
+        android:scaleType="fitCenter" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/car_step_action"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textAllCaps="false"
+        android:visibility="gone" />
+</LinearLayout>

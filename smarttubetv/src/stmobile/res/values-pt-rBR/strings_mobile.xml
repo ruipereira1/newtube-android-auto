@@ -92,4 +92,17 @@
     <string name="car_setup_notif_found">Encontrei a janela do código. Digite os 6 dígitos na notificação do NewTube.</string>
     <string name="car_setup_notif_channel_status">Progresso da ativação no Android Auto</string>
     <string name="car_setup_local_network_needed">Permita o acesso a dispositivos na rede local: é por aí que a Depuração por Wi-Fi é encontrada.</string>
+    <string name="car_setup_action_pair_again">Parear de novo</string>
+    <string name="car_guide_1_title">Ative as Opções do desenvolvedor</string>
+    <string name="car_guide_1_text">Em Sobre o telefone, toque 7 vezes em Número da versão (pode pedir o PIN). No Samsung fica em Informações do software; no Xiaomi, toque na versão do MIUI/HyperOS.</string>
+    <string name="car_guide_1_action">Abrir Sobre o telefone</string>
+    <string name="car_guide_2_title">Ligue a Depuração por Wi-Fi</string>
+    <string name="car_guide_2_text">Nas Opções do desenvolvedor, seção Depuração, ligue a Depuração por Wi-Fi. Se perguntar, permita nesta rede. É preciso estar no Wi-Fi.</string>
+    <string name="car_guide_2_action">Abrir Opções do desenvolvedor</string>
+    <string name="car_guide_3_title">Peça um código</string>
+    <string name="car_guide_3_text">Toque em Começar. Abre a Depuração por Wi-Fi: toque em “Parear o dispositivo com um código de pareamento”.</string>
+    <string name="car_guide_4_title">Digite o código na notificação do NewTube</string>
+    <string name="car_guide_4_text">Deixe o código na tela. Puxe as notificações e digite os 6 dígitos na notificação do NewTube.</string>
+    <string name="car_guide_5_title">Toque em Atualizar</string>
+    <string name="car_guide_5_text">Abre a tela de instalação: toque em Atualizar. O NewTube fecha e volta pronto para o Android Auto. Pronto: daqui em diante as atualizações são um toque.</string>
 </resources>

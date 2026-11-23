@@ -516,4 +516,17 @@
     <string name="car_setup_notif_found">Ventana del código encontrada. Escribe los 6 dígitos en la notificación de NewTube.</string>
     <string name="car_setup_notif_channel_status">Progreso de la activación en Android Auto</string>
     <string name="car_setup_local_network_needed">Permite el acceso a dispositivos de la red local: por ahí se encuentra la Depuración inalámbrica.</string>
+    <string name="car_setup_action_pair_again">Vincular otra vez</string>
+    <string name="car_guide_1_title">Activa las Opciones de desarrollador</string>
+    <string name="car_guide_1_text">En Información del teléfono, toca 7 veces Número de compilación (puede pedir el PIN). En Samsung está en Información de software; en Xiaomi, toca la versión de MIUI/HyperOS.</string>
+    <string name="car_guide_1_action">Abrir Información del teléfono</string>
+    <string name="car_guide_2_title">Activa la Depuración inalámbrica</string>
+    <string name="car_guide_2_text">En Opciones de desarrollador, sección Depuración, activa la Depuración inalámbrica. Si pregunta, permítela en esta red. Necesitas estar en Wi-Fi.</string>
+    <string name="car_guide_2_action">Abrir Opciones de desarrollador</string>
+    <string name="car_guide_3_title">Pide un código</string>
+    <string name="car_guide_3_text">Toca Empezar. Se abre la Depuración inalámbrica: toca “Vincular dispositivo con código de vinculación”.</string>
+    <string name="car_guide_4_title">Escribe el código en la notificación de NewTube</string>
+    <string name="car_guide_4_text">Deja el código en pantalla. Baja las notificaciones y escribe los 6 dígitos en la notificación de NewTube.</string>
+    <string name="car_guide_5_title">Toca Actualizar</string>
+    <string name="car_guide_5_text">Se abre la pantalla de instalación: toca Actualizar. NewTube se cierra y vuelve lista para Android Auto. Hecho: a partir de ahora las actualizaciones son un toque.</string>
 </resources>

@@ -567,4 +567,17 @@
     <string name="car_setup_notif_found">Code window found. Type the 6 digits in the NewTube notification.</string>
     <string name="car_setup_notif_channel_status">Android Auto setup progress</string>
     <string name="car_setup_local_network_needed">Allow access to devices on the local network: Wireless debugging is found through it.</string>
+    <string name="car_setup_action_pair_again">Pair again</string>
+    <string name="car_guide_1_title">Turn on Developer options</string>
+    <string name="car_guide_1_text">In About phone, tap Build number 7 times (the phone may ask for your PIN). On Samsung it\'s under Software information; on Xiaomi, tap MIUI/OS version.</string>
+    <string name="car_guide_1_action">Open About phone</string>
+    <string name="car_guide_2_title">Turn on Wireless debugging</string>
+    <string name="car_guide_2_text">In Developer options, Debugging section, turn on Wireless debugging. If it asks, allow it on this network. You need to be on Wi-Fi.</string>
+    <string name="car_guide_2_action">Open Developer options</string>
+    <string name="car_guide_3_title">Ask for a pairing code</string>
+    <string name="car_guide_3_text">Tap Start. Wireless debugging opens: tap “Pair device with pairing code”.</string>
+    <string name="car_guide_4_title">Type the code in the NewTube notification</string>
+    <string name="car_guide_4_text">Leave the code on screen. Pull down the notifications and type the 6 digits in the NewTube notification.</string>
+    <string name="car_guide_5_title">Tap Update</string>
+    <string name="car_guide_5_text">The install screen opens: tap Update. NewTube closes and comes back ready for Android Auto. Done: updates are one tap from now on.</string>
 </resources>

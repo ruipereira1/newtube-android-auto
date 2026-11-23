@@ -124,11 +124,20 @@
                 android:textAllCaps="false"
                 android:visibility="gone" />
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/car_setup_repair"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/car_setup_action_pair_again"
+                android:textAllCaps="false"
+                android:visibility="gone" />
+
             <LinearLayout
                 android:id="@+id/car_setup_steps_box"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="24dp"
                 android:orientation="vertical"
                 android:visibility="gone">
 
@@ -137,25 +146,16 @@
                     android:layout_height="wrap_content"
                     android:text="@string/car_setup_steps_title"
                     android:textColor="@color/mobile_color_on_surface"
-                    android:textSize="15sp"
+                    android:textSize="16sp"
                     android:textStyle="bold" />
 
-                <TextView
+                <!-- One card per step, built in CarSetupActivity.bindGuide(). -->
+                <LinearLayout
+                    android:id="@+id/car_setup_steps"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:lineSpacingExtra="4dp"
-                    android:text="@string/car_setup_steps"
-                    android:textColor="@color/mobile_color_on_surface"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:text="@string/car_setup_dev_options_hint"
-                    android:textColor="@color/mobile_color_on_surface_secondary"
-                    android:textSize="13sp" />
+                    android:orientation="vertical" />
             </LinearLayout>
 
             <TextView

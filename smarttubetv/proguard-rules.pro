@@ -36,3 +36,11 @@
 -dontwarn org.slf4j.**
 
 # End Enable minification
+
+# NEWTUBE(android-auto fork): the in-app Android Auto setup (wireless-debugging ADB client, vendored
+# io.github.muntashirakon.adb) finds Conscrypt's TLS 1.3 provider and its keying-material export by
+# reflection - keep exactly those two.
+-keep class org.conscrypt.OpenSSLProvider { <init>(); }
+-keepclassmembers class org.conscrypt.Conscrypt {
+    public static byte[] exportKeyingMaterial(javax.net.ssl.SSLSocket, java.lang.String, byte[], int);
+}

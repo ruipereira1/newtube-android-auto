@@ -77,6 +77,12 @@
          (SSDP/DIAL discovery). Unknown on older releases; requested before the cast picker. -->
     <uses-permission android:name="android.permission.ACCESS_LOCAL_NETWORK" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <!-- NEWTUBE(android-auto): Tu → Android Auto. Never granted by installing: after the one-time
+         pairing with Wireless debugging, the shell grants it ("pm grant"), so later updates can
+         switch Wireless debugging on for the install and off again afterwards. -->
+    <uses-permission
+        android:name="android.permission.WRITE_SECURE_SETTINGS"
+        tools:ignore="ProtectedPermissions" />
 
     <!-- LAUNCH MODES: every touch activity is singleTop (NOT the TV's singleInstance) so ALL
          screens share ONE task, like a normal phone app. singleInstance put each screen in its
@@ -203,6 +209,18 @@
           is still there to resume the install after Android's "Install unknown apps" screen.
           configChanges: a rotation keeps the sheet (the download state lives in AppUpdates).
         -->
+        <!-- NEWTUBE(android-auto): Tu → Android Auto (show the app on Android Auto, updates). -->
+        <activity
+            android:name="com.newtube.mobile.car.setup.CarSetupActivity"
+            android:exported="false"
+            android:launchMode="singleTop"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|layoutDirection|keyboardHidden|uiMode"
+            android:screenOrientation="unspecified"
+            android:theme="@style/Theme.NewTube" />
+        <receiver
+            android:name="com.newtube.mobile.car.setup.CarSetupReceiver"
+            android:exported="false" />
+
         <activity
             android:name="com.newtube.mobile.ui.update.MobileUpdateActivity"
             android:exported="false"

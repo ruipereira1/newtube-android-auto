@@ -1375,6 +1375,7 @@ public class MobileBrowseActivity extends MobileActivity
 
         // NEWTUBE(android-auto): the car switches, without going into Settings.
         addYouGroupLabel(getString(R.string.car_you_group));
+        addYouCarSetupRow();
         addYouSwitchRow(R.drawable.ic_car, getString(R.string.car_passenger_mode),
                 getString(R.string.car_you_passenger_summary),
                 () -> com.newtube.mobile.car.CarModePrefs.isPassengerModeEnabled(this),
@@ -1387,6 +1388,48 @@ public class MobileBrowseActivity extends MobileActivity
         addYouDivider();
         addYouRow(R.drawable.ic_mobile_settings, getString(R.string.header_settings),
                 this::openSettings);
+    }
+
+    /**
+     * Tu → Android Auto: whether Android Auto lists the app, or that an update is out. Opens the
+     * setup screen. A due update check (at most daily, a few KB) refreshes the summary in place.
+     */
+    private void addYouCarSetupRow() {
+        View row = LayoutInflater.from(this).inflate(R.layout.item_mobile_you_switch_row,
+                mYouRows, false);
+        ((ImageView) row.findViewById(R.id.mobile_you_switch_icon)).setImageResource(R.drawable.ic_car);
+        row.findViewById(R.id.mobile_you_switch).setVisibility(View.GONE);
+        row.setOnClickListener(v -> com.newtube.mobile.car.setup.CarSetupActivity.start(this));
+        bindYouCarSetupRow(row);
+        mYouRows.addView(row);
+        if (com.newtube.mobile.car.setup.CarUpdates.isCheckDue(this)
+                && com.newtube.mobile.car.setup.CarSetup.isPaired(this)) {
+            android.content.Context app = getApplicationContext();
+            new Thread(() -> {
+                try {
+                    com.newtube.mobile.car.setup.CarUpdates.check(app);
+                    row.post(() -> bindYouCarSetupRow(row));
+                } catch (Exception ignored) {
+                    // Offline or rate-limited: the next day's check tries again.
+                }
+            }, "car-update-check").start();
+        }
+    }
+
+    private void bindYouCarSetupRow(View row) {
+        TextView title = row.findViewById(R.id.mobile_you_switch_title);
+        TextView summary = row.findViewById(R.id.mobile_you_switch_summary);
+        if (com.newtube.mobile.car.setup.CarUpdates.hasUpdate(this)) {
+            title.setText(R.string.car_setup_row_update);
+            summary.setText(getString(R.string.car_setup_row_summary_update,
+                    com.newtube.mobile.car.setup.CarUpdates.cached(this).tag));
+        } else if (com.newtube.mobile.car.setup.CarSetup.isReadyForAndroidAuto(this)) {
+            title.setText(R.string.car_setup_row_ready);
+            summary.setText(R.string.car_setup_row_summary_ready);
+        } else {
+            title.setText(R.string.car_setup_row_activate);
+            summary.setText(R.string.car_setup_row_summary_not_ready);
+        }
     }
 
     /** A You row with a switch; tapping anywhere on the row flips it. */

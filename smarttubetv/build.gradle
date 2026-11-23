@@ -175,6 +175,12 @@ android {
         // releases, so it would offer upstream NewTube (no Android Auto). Updates come from this
         // fork's GitHub releases, installed the way Android Auto accepts (scripts/android-auto).
         buildConfigField "boolean", "IN_APP_UPDATES", "false"
+        // NEWTUBE(android-auto fork): the release tag this build is (auto-v...), so the in-app
+        // Android Auto screen can tell a newer GitHub release from this one. CI builds a tag push, so
+        // GITHUB_REF_NAME is the tag; a local build has none and the screen says so.
+        def autoTag = System.getenv('AUTO_RELEASE_TAG') ?: System.getenv('GITHUB_REF_NAME') ?: ''
+        if (!autoTag.startsWith('auto-v')) autoTag = ''
+        buildConfigField "String", "AUTO_RELEASE_TAG", "\"" + autoTag + "\""
 
         // The content of Universal apk
         ndk {

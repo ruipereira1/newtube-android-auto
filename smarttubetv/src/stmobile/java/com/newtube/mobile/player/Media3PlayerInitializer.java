@@ -480,16 +480,6 @@ public class Media3PlayerInitializer {
 
         private static int sDebugDecoderFailuresLeft = 4;
 
-        /** NEWTUBE(car): the stock sink, held back by the car's sound delay (see CarAudioSync). */
-        @Override
-        @Nullable
-        protected androidx.media3.exoplayer.audio.AudioSink buildAudioSink(Context context,
-                boolean enableFloatOutput, boolean enableAudioOutputPlaybackParams) {
-            androidx.media3.exoplayer.audio.AudioSink sink = super.buildAudioSink(context,
-                    enableFloatOutput, enableAudioOutputPlaybackParams);
-            return sink != null ? new CarAudioSync.Sink(sink) : null;
-        }
-
         @Override
         protected void buildAudioRenderers(Context context, int extensionRendererMode,
                 androidx.media3.exoplayer.mediacodec.MediaCodecSelector mediaCodecSelector,

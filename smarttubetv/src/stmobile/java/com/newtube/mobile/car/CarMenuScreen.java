@@ -24,7 +24,6 @@ import com.liskovsoft.smartyoutubetv2.common.app.models.data.Video;
 import com.liskovsoft.smartyoutubetv2.common.app.models.playback.service.VideoStateService;
 import com.liskovsoft.smartyoutubetv2.common.app.presenters.PlaybackPresenter;
 import com.liskovsoft.smartyoutubetv2.tv.R;
-import com.newtube.mobile.player.CarAudioSync;
 import com.newtube.mobile.ui.playback.CarDisplayBridge;
 
 import java.util.List;
@@ -87,25 +86,6 @@ public class CarMenuScreen extends Screen {
                 R.drawable.ic_player_queue, CarVideoListScreen.Source.PLAYLISTS));
         list.addItem(section(R.string.car_menu_trending, R.string.car_menu_trending_summary,
                 R.drawable.ic_car_trending, CarVideoListScreen.Source.TRENDING));
-
-        // Sound later than the picture? Each tap holds the picture back 100 ms more (up to
-        // 600 ms, then off again). Applies at once to the video on the car screen.
-        int delay = CarModePrefs.getAudioDelayMs(context);
-        list.addItem(new Row.Builder()
-                .setTitle(context.getString(R.string.car_audio_sync))
-                .addText(delay > 0
-                        ? context.getString(R.string.car_audio_sync_on, delay)
-                        : context.getString(R.string.car_audio_sync_off))
-                .setOnClickListener(() -> {
-                    int next = CarModePrefs.getAudioDelayMs(context) + CarAudioSync.STEP_MS;
-                    if (next > CarAudioSync.MAX_MS) {
-                        next = 0;
-                    }
-                    CarModePrefs.setAudioDelayMs(context, next);
-                    CarAudioSync.setDelayMs(next);
-                    invalidate();
-                })
-                .build());
 
         list.addItem(new Row.Builder()
                 .setTitle(context.getString(R.string.car_passenger_mode))

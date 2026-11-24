@@ -37,8 +37,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 
 /**
  * The NewTube menu on the car screen: the same main sections as the phone app (Home,
- * Subscriptions, History, Playlists, Trending), the videos other apps such as Nuvio sent to
- * NewTube ({@link CarExternalListScreen}) and the passenger-mode switch.
+ * Subscriptions, History, Playlists, Trending) plus the passenger-mode switch.
  *
  * <p>Opened from the "Menu" button on the player screen ({@link CarVideoScreen}). Each section
  * opens a {@link CarVideoListScreen}; picking a video there starts it and returns to the player.
@@ -88,17 +87,6 @@ public class CarMenuScreen extends Screen {
         list.addItem(section(R.string.car_menu_trending, R.string.car_menu_trending_summary,
                 R.drawable.ic_car_trending, CarVideoListScreen.Source.TRENDING));
 
-        // Videos Nuvio, Stremio and other apps sent to NewTube, to play again from here.
-        list.addItem(new Row.Builder()
-                .setTitle(context.getString(R.string.car_menu_external))
-                .addText(context.getString(R.string.car_menu_external_summary))
-                .setImage(new CarIcon.Builder(
-                        IconCompat.createWithResource(context, R.drawable.ic_player_queue)).build())
-                .setBrowsable(true)
-                .setOnClickListener(() -> getScreenManager().push(
-                        new CarExternalListScreen(context)))
-                .build());
-
         list.addItem(new Row.Builder()
                 .setTitle(context.getString(R.string.car_passenger_mode))
                 .addText(context.getString(R.string.car_passenger_mode_summary))
@@ -146,7 +134,6 @@ public class CarMenuScreen extends Screen {
                         + context.getString(R.string.car_time_left, left))
                 .setOnClickListener(() -> {
                     // The player resumes from the remembered position by itself.
-                    CarDisplayBridge.releaseExternal(); // a video from another app gives way
                     PlaybackPresenter.instance(context.getApplicationContext())
                             .openVideo(state.video);
                     getScreenManager().popToRoot();

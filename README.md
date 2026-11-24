@@ -41,14 +41,6 @@ surface and a small set of controls.
 *Screenshots from the Android Auto desktop head unit, with the app in Portuguese (it follows the
 phone's language). Video: "Big Buck Bunny" © Blender Foundation, CC BY 3.0.*
 
-### Videos from Nuvio, Stremio and other apps
-
-NewTube also registers as an **external video player**. Apps that can "open in another player"
-(Nuvio, Stremio...) can send it a video, with its headers, subtitles and resume position; it
-plays on the phone and, when Android Auto shows NewTube, on the car screen. On close it returns
-the position the way MX Player and VLC do, so the other app keeps "continue watching" right.
-See [the guide](docs/INSTALL.md#watch-nuvio-or-stremio-videos-in-the-car).
-
 ## What this fork adds
 
 - **Android Auto screen** with the live NewTube player, not a second player. The car gets the

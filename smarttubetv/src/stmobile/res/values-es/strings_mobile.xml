@@ -529,9 +529,4 @@
     <string name="car_guide_4_text">Cuando aparezca arriba la notificación de NewTube, toca Código y escribe los 6 dígitos. No cierres la ventana del código.</string>
     <string name="car_guide_5_title">Toca Actualizar</string>
     <string name="car_guide_5_text">Toca Actualizar. Si Google Play Protect lo pide, toca Analizar app y luego Instalar (si avisa de apps desconocidas, toca Continuar). NewTube se cierra y vuelve lista para Android Auto. Hecho: a partir de ahora las actualizaciones son un toque.</string>
-    <string name="external_player_label">NewTube Auto (pantalla del coche)</string>
-    <string name="external_on_car">Reproduciendo en la pantalla del coche</string>
-    <string name="car_menu_external">Otras apps (Nuvio…)</string>
-    <string name="car_menu_external_summary">Lo que Nuvio y otras apps enviaron</string>
-    <string name="car_external_empty">Aún nada. En Nuvio, abre un vídeo en el reproductor externo NewTube Auto.</string>
 </resources>

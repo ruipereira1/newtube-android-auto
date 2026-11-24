@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.Parcelable;
 import android.text.TextUtils;
 import android.view.Surface;
@@ -64,6 +66,16 @@ public class ExternalVideoActivity extends Activity implements CarDisplayBridge.
     private boolean mEnded;
     private boolean mFailed;
     private boolean mStopped;
+    /** Saves where the video is every few seconds, for the car screen's list of recent videos. */
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
+    private final Runnable mSavePosition = new Runnable() {
+        @Override
+        public void run() {
+            savePosition();
+            mHandler.postDelayed(this, SAVE_EVERY_MS);
+        }
+    };
+    private static final long SAVE_EVERY_MS = 15_000;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -116,6 +128,7 @@ public class ExternalVideoActivity extends Activity implements CarDisplayBridge.
         mTitle = firstNonEmpty(intent.getStringExtra("title"),
                 intent.getStringExtra(Intent.EXTRA_TITLE), uri.getLastPathSegment());
         mSourceKey = uri.toString();
+        ExternalHistory.remember(this, uri, mTitle, intent.getType(), intent);
 
         Map<String, String> headers = parseHeaders(intent);
         DefaultHttpDataSource.Factory http = new DefaultHttpDataSource.Factory()
@@ -190,6 +203,8 @@ public class ExternalVideoActivity extends Activity implements CarDisplayBridge.
             mPlayerView.setPlayer(player);
         }
         CarDisplayBridge.attachExternal(this);
+        mHandler.removeCallbacks(mSavePosition);
+        mHandler.postDelayed(mSavePosition, SAVE_EVERY_MS);
         return true;
     }
 
@@ -216,7 +231,15 @@ public class ExternalVideoActivity extends Activity implements CarDisplayBridge.
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        savePosition();
+    }
+
+    @Override
     protected void onDestroy() {
+        mHandler.removeCallbacks(mSavePosition);
+        savePosition();
         CarDisplayBridge.detachExternal(this);
         releasePlayer();
         super.onDestroy();
@@ -246,7 +269,21 @@ public class ExternalVideoActivity extends Activity implements CarDisplayBridge.
         setResult(resultCode, result);
     }
 
+    private void savePosition() {
+        ExoPlayer player = mPlayer;
+        if (player == null || mSourceKey == null || mFailed) {
+            return;
+        }
+        long duration = player.getDuration();
+        long position = mEnded && duration > 0 ? duration : player.getCurrentPosition();
+        if (position > 0 || mEnded) {
+            ExternalHistory.updatePosition(this, mSourceKey, position,
+                    duration > 0 ? duration : 0);
+        }
+    }
+
     private void releasePlayer() {
+        savePosition();
         ExoPlayer player = mPlayer;
         mPlayer = null;
         if (player != null) {

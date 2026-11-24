@@ -582,4 +582,7 @@
     <string name="car_guide_5_text">Tap Update. If Google Play Protect asks, tap Scan app and then Install (if it warns about unknown apps, tap Continue). NewTube closes and comes back ready for Android Auto. Done: from now on updates take one tap.</string>
     <string name="external_player_label">NewTube Auto (car screen)</string>
     <string name="external_on_car">Playing on the car screen</string>
+    <string name="car_menu_external">Other apps (Nuvio…)</string>
+    <string name="car_menu_external_summary">What Nuvio and other apps sent here</string>
+    <string name="car_external_empty">Nothing yet. In Nuvio, open a video in the external player NewTube Auto.</string>
 </resources>

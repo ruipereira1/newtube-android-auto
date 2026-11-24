@@ -467,4 +467,7 @@
     <string name="car_guide_5_text">Toca em Atualizar. Se o Google Play Protect pedir, toca em Analisar app e depois em Instalar (se avisar sobre apps desconhecidas, toca em Continuar). A NewTube fecha e volta pronta para o Android Auto. Feito: daqui para a frente as atualizações são um toque.</string>
     <string name="external_player_label">NewTube Auto (ecrã do carro)</string>
     <string name="external_on_car">A reproduzir no ecrã do carro</string>
+    <string name="car_menu_external">Outras apps (Nuvio…)</string>
+    <string name="car_menu_external_summary">O que a Nuvio e outras apps enviaram</string>
+    <string name="car_external_empty">Ainda nada. Na Nuvio, abre um vídeo no leitor externo NewTube Auto.</string>
 </resources>

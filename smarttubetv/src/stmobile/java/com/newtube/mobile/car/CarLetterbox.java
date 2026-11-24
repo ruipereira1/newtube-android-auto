@@ -14,7 +14,12 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.media3.common.text.Cue;
 import androidx.media3.ui.AspectRatioFrameLayout;
+import androidx.media3.ui.CaptionStyleCompat;
+import androidx.media3.ui.SubtitleView;
+
+import java.util.List;
 
 /**
  * Fills the car screen with the video without stretching it.
@@ -27,6 +32,9 @@ import androidx.media3.ui.AspectRatioFrameLayout;
  * its shape and covers the whole screen; whatever does not fit (a little at the top and bottom of
  * a 16:9 video on a wide screen) is cropped. Vertical videos (Shorts) are shown whole instead,
  * with black bars at the sides. Never distorted.</p>
+ *
+ * <p>Subtitles are drawn over the visible part of the screen, not over the zoomed picture, so a
+ * crop never cuts them off.</p>
  */
 final class CarLetterbox {
     interface Listener {
@@ -41,6 +49,7 @@ final class CarLetterbox {
     private final Presentation mPresentation;
     private final FrameLayout mVisibleBox;
     private final AspectRatioFrameLayout mFrame;
+    private final SubtitleView mSubtitles;
     @Nullable
     private Surface mVideoSurface;
     private float mAspectRatio;
@@ -96,6 +105,16 @@ final class CarLetterbox {
             mVisibleBox.addView(mFrame, new FrameLayout.LayoutParams(
                     FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT,
                     Gravity.CENTER));
+
+            // White text with a black outline, readable on any picture; a little larger than on
+            // the phone, for the distance to the car screen.
+            mSubtitles = new SubtitleView(mPresentation.getContext());
+            mSubtitles.setStyle(new CaptionStyleCompat(Color.WHITE, Color.TRANSPARENT,
+                    Color.TRANSPARENT, CaptionStyleCompat.EDGE_TYPE_OUTLINE, Color.BLACK, null));
+            mSubtitles.setFractionalTextSize(SubtitleView.DEFAULT_TEXT_SIZE_FRACTION * 1.15f);
+            mSubtitles.setApplyEmbeddedStyles(false);
+            mVisibleBox.addView(mSubtitles, new FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
             root.addView(mVisibleBox, new FrameLayout.LayoutParams(
                     FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
 
@@ -105,6 +124,11 @@ final class CarLetterbox {
             mDisplay.release();
             throw e;
         }
+    }
+
+    /** The subtitle lines to show now (empty or null: none). */
+    void setCues(@Nullable List<Cue> cues) {
+        mSubtitles.setCues(cues);
     }
 
     /** Width / height of the picture as it should be shown (pixel aspect ratio included). */

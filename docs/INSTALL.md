@@ -106,6 +106,9 @@ NewTube is also an **external video player**: apps that can open a video in anot
    "Playing on the car screen".
 4. When you close the video (Back), Nuvio learns where you stopped, for "Continue watching".
 
+Subtitles Nuvio sends show on the phone (the subtitles button picks one) and on the car
+screen, in white text with an outline.
+
 In the car, **Previous / Next** skip 10 seconds (these videos have no queue). To save mobile
 data the car asks sources that offer several qualities for 720p at most; a single file (an .mkv,
 say) always comes in the quality it has.

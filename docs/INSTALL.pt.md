@@ -108,6 +108,9 @@ leitor (Nuvio, Stremio e outras) podem mandá-lo para o NewTube, e ele aparece n
    "A reproduzir no ecrã do carro".
 4. Ao fechar o vídeo (botão Voltar), a Nuvio fica a saber onde paraste, para o "Continuar a ver".
 
+As legendas que a Nuvio enviar aparecem no telemóvel (botão de legendas para escolher) e no
+ecrã do carro, em letra branca com contorno.
+
 No carro, **Anterior / Seguinte** saltam 10 segundos (estes vídeos não têm fila). Para poupar
 dados móveis, o carro pede no máximo 720p às fontes que têm várias qualidades; um ficheiro
 único (por exemplo um .mkv) vem sempre na qualidade em que está.

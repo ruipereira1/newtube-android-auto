@@ -134,6 +134,7 @@ public class CarMenuScreen extends Screen {
                         + context.getString(R.string.car_time_left, left))
                 .setOnClickListener(() -> {
                     // The player resumes from the remembered position by itself.
+                    CarDisplayBridge.releaseExternal(); // a video from another app gives way
                     PlaybackPresenter.instance(context.getApplicationContext())
                             .openVideo(state.video);
                     getScreenManager().popToRoot();

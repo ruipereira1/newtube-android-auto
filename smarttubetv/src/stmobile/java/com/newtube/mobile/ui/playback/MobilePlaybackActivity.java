@@ -1458,6 +1458,8 @@ public class MobilePlaybackActivity extends MobileActivity
     @Override
     protected void onResume() {
         super.onResume();
+        // A video from another app (Nuvio...) may still hold the car screen: this one is newer.
+        CarDisplayBridge.releaseExternal();
 
         PlayerTransitionBridge.LaunchSnapshot launch = PlayerTransitionBridge.take();
 

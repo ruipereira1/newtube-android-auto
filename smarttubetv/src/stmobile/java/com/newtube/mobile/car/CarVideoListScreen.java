@@ -30,6 +30,7 @@ import com.liskovsoft.smartyoutubetv2.common.app.models.data.Video;
 import com.liskovsoft.smartyoutubetv2.common.app.models.playback.service.VideoStateService;
 import com.liskovsoft.smartyoutubetv2.common.app.presenters.PlaybackPresenter;
 import com.liskovsoft.smartyoutubetv2.tv.R;
+import com.newtube.mobile.ui.playback.CarDisplayBridge;
 import com.liskovsoft.youtubeapi.service.YouTubeServiceManager;
 
 import java.util.ArrayList;
@@ -285,6 +286,7 @@ public class CarVideoListScreen extends Screen {
         CarContext context = getCarContext();
         if (!isFolder(video)) {
             // The car screen follows the phone's player, so starting the video there is enough.
+            CarDisplayBridge.releaseExternal(); // a video from another app gives way
             PlaybackPresenter.instance(context.getApplicationContext()).openVideo(video);
             getScreenManager().popToRoot();
             return;

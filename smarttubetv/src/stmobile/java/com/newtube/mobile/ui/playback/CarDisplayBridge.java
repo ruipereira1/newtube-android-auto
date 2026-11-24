@@ -105,6 +105,30 @@ public final class CarDisplayBridge {
         }
     }
 
+    /**
+     * A NewTube video is starting (on the phone or from the car menu): the newest video wins, so
+     * an external video still open behind it gives the car screen back and pauses. Nothing
+     * happens when no external video is open.
+     */
+    public static void releaseExternal() {
+        ExternalSession external = sExternal.get();
+        if (external == null) {
+            return;
+        }
+        sExternal = new WeakReference<>(null);
+        ExoPlayer player = external.getCarPlayer();
+        if (player != null) {
+            player.pause();
+        }
+        if (sCarSurface != null && sCarSurface.isValid()) {
+            external.detachCarSurface();
+            MobilePlaybackActivity activity = sActivity.get();
+            if (activity != null) {
+                activity.attachCarSurface(sCarSurface);
+            }
+        }
+    }
+
     public static void attachCarSurface(@Nullable Surface surface) {
         if (surface == null || !surface.isValid()) {
             return;

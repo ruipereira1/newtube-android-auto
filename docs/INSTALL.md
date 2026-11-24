@@ -75,14 +75,14 @@ Done: **You → Android Auto** says **Ready**.
 
 <p align="center">
   <img src="images/android-auto/car-start.png" width="380" alt="Start screen: start a video on your phone, or tap Menu to pick one here">
-  <img src="images/android-auto/car-menu.png" width="380" alt="The menu: Home, Subscriptions, History, Playlists and Trending">
+  <img src="images/android-auto/car-menu.png" width="380" alt="The menu: Home, Subscriptions, History and Playlists">
 </p>
 
 | Button | What it does |
 |:--|:--|
 | **Previous / Next** | Previous or next video (or jumps 10 seconds if there is none) |
 | **Pause / Play** | Pauses or plays the video |
-| **Menu** | Home, Subscriptions, History, Playlists, Trending and the passenger-mode switch |
+| **Menu** | Home, Subscriptions, History, Playlists and the passenger-mode switch |
 
 **On the video itself:**
 

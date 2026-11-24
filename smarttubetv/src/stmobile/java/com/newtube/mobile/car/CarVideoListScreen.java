@@ -112,12 +112,6 @@ public class CarVideoListScreen extends Screen {
             public boolean needsAccount() {
                 return true;
             }
-        },
-        TRENDING {
-            @Override
-            public Observable<List<MediaGroup>> load(ContentService service) {
-                return service.getTrendingObserve();
-            }
         }
     }
 

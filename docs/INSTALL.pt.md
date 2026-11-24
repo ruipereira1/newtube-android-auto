@@ -80,14 +80,14 @@ software; num Xiaomi toca na versão do MIUI/HyperOS.*
 
 <p align="center">
   <img src="images/android-auto/car-start.png" width="380" alt="Ecrã inicial: inicia um vídeo no telemóvel, ou toca em Menu para escolher um aqui">
-  <img src="images/android-auto/car-menu.png" width="380" alt="O menu: Início, Subscrições, Histórico, Playlists e Em alta">
+  <img src="images/android-auto/car-menu.png" width="380" alt="O menu: Início, Subscrições, Histórico e Playlists">
 </p>
 
 | Botão | O que faz |
 |:--|:--|
 | **Anterior / Seguinte** | Vídeo anterior ou seguinte (ou salta 10 segundos, se não houver) |
 | **Pausar / Reproduzir** | Pausa ou continua o vídeo |
-| **Menu** | Início, Subscrições, Histórico, Playlists, Em alta e o interruptor do modo passageiro |
+| **Menu** | Início, Subscrições, Histórico, Playlists e o interruptor do modo passageiro |
 
 **No próprio vídeo:**
 

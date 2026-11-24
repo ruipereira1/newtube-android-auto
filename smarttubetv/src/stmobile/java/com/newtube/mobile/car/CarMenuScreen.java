@@ -37,7 +37,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 
 /**
  * The NewTube menu on the car screen: the same main sections as the phone app (Home,
- * Subscriptions, History, Playlists, Trending) plus the passenger-mode switch.
+ * Subscriptions, History, Playlists) plus the passenger-mode switch.
  *
  * <p>Opened from the "Menu" button on the player screen ({@link CarVideoScreen}). Each section
  * opens a {@link CarVideoListScreen}; picking a video there starts it and returns to the player.
@@ -84,8 +84,7 @@ public class CarMenuScreen extends Screen {
                 R.drawable.ic_nav_history, CarVideoListScreen.Source.HISTORY));
         list.addItem(section(R.string.car_menu_playlists, R.string.car_menu_playlists_summary,
                 R.drawable.ic_player_queue, CarVideoListScreen.Source.PLAYLISTS));
-        list.addItem(section(R.string.car_menu_trending, R.string.car_menu_trending_summary,
-                R.drawable.ic_car_trending, CarVideoListScreen.Source.TRENDING));
+        // No "Trending": YouTube retired its Trending page (the request now fails with 400).
 
         list.addItem(new Row.Builder()
                 .setTitle(context.getString(R.string.car_passenger_mode))

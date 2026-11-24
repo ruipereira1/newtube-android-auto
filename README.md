@@ -36,7 +36,7 @@ surface and a small set of controls.
 | Start | Menu | Watching |
 |:--:|:--:|:--:|
 | <img src="docs/images/android-auto/car-start.png" width="260" alt="Start screen"> | <img src="docs/images/android-auto/car-menu.png" width="260" alt="Menu with Home, Subscriptions and History"> | <img src="docs/images/android-auto/car-player.jpg" width="260" alt="Video playing with the car buttons"> |
-| Start a video on the phone, or tap **Menu** | Home, Subscriptions, History, Playlists, Trending | Full screen, with Previous, Pause, Next and Menu |
+| Start a video on the phone, or tap **Menu** | Home, Subscriptions, History, Playlists | Full screen, with Previous, Pause, Next and Menu |
 
 *Screenshots from the Android Auto desktop head unit, with the app in Portuguese (it follows the
 phone's language). Video: "Big Buck Bunny" © Blender Foundation, CC BY 3.0.*
@@ -50,7 +50,7 @@ phone's language). Video: "Big Buck Bunny" © Blender Foundation, CC BY 3.0.*
 - **Car controls:** previous, play/pause, next and **Menu**. **Double tap** the right or left
   side of the video to skip 10 seconds forward or back, as on YouTube; a single tap only shows
   the buttons.
-- **Menu on the car screen:** Home, Subscriptions, History, Playlists and Trending, with
+- **Menu on the car screen:** Home, Subscriptions, History and Playlists, with
   thumbnails. Tap a video to play it; tap a playlist or channel to see its videos. Passenger
   mode is switched on and off at the bottom of the menu.
 - **Full-screen video:** the video fills the whole car screen without being stretched.
@@ -181,7 +181,7 @@ smarttubetv/src/stmobile/java/com/newtube/mobile/car/
   NewTubeCarSession.java      one Android Auto session
   CarVideoScreen.java         NavigationTemplate + SurfaceCallback (the player screen)
   CarLetterbox.java           fills the car screen with the video without stretching it
-  CarMenuScreen.java          the Menu: Home, Subscriptions, History, Playlists, Trending
+  CarMenuScreen.java          the Menu: Home, Subscriptions, History, Playlists
   CarVideoListScreen.java     a list of videos; tap to play, or open a playlist/channel
   CarModePrefs.java           passenger-mode preference (default on)
 

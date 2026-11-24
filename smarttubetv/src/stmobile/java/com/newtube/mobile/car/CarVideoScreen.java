@@ -136,16 +136,33 @@ public class CarVideoScreen extends Screen implements SurfaceCallback {
         CarContext context = getCarContext();
 
         if (!CarModePrefs.isPassengerModeEnabled(context)) {
+            Action showVideo = new Action.Builder()
+                    .setTitle(context.getString(R.string.car_enable_passenger_mode))
+                    .setOnClickListener(() -> {
+                        CarModePrefs.setPassengerModeEnabled(context, true);
+                        mLastPassengerMode = true;
+                        invalidate();
+                    })
+                    .build();
+            ExoPlayer audioPlayer = CarDisplayBridge.getPlayer();
+            if (audioPlayer == null || CarDisplayBridge.getVideo() == null) {
+                // Nothing playing: Menu first, as on the start screen.
+                return message(context.getString(R.string.car_passenger_mode_off))
+                        .addAction(menuAction(context))
+                        .addAction(showVideo)
+                        .build();
+            }
+            // Audio only: the sound keeps playing, so it must be possible to pause it from here.
+            // Menu moves to the corner (a message has room for two buttons).
+            boolean playing = audioPlayer.getPlayWhenReady();
             return message(context.getString(R.string.car_passenger_mode_off))
-                    .addAction(new Action.Builder()
-                            .setTitle(context.getString(R.string.car_enable_passenger_mode))
-                            .setOnClickListener(() -> {
-                                CarModePrefs.setPassengerModeEnabled(context, true);
-                                mLastPassengerMode = true;
-                                invalidate();
-                            })
+                    .addAction(action(playing ? R.drawable.ic_player_pause
+                                    : R.drawable.ic_player_play,
+                            context.getString(playing ? R.string.car_pause : R.string.car_play),
+                            CarDisplayBridge::togglePlayPause))
+                    .addAction(showVideo)
+                    .setActionStrip(new ActionStrip.Builder().addAction(menuAction(context))
                             .build())
-                    .addAction(menuAction(context))
                     .build();
         }
 

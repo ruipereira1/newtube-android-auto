@@ -426,8 +426,8 @@
 
     <!-- NEWTUBE(android-auto): pantalla del coche y ajuste de modo pasajero. -->
     <string name="car_passenger_mode_off">El modo pasajero está desactivado. Actívalo para ver vídeo aquí.</string>
-    <string name="car_enable_passenger_mode">Activar modo pasajero</string>
-    <string name="car_disable_passenger_mode">Desactivar modo pasajero</string>
+    <string name="car_enable_passenger_mode">Mostrar vídeo</string>
+    <string name="car_disable_passenger_mode">Solo audio</string>
     <string name="car_start_video">Inicia un vídeo en el teléfono o toca Menú para elegir uno aquí.</string>
     <string name="car_video_unavailable_title">Vídeo no disponible</string>
     <string name="car_home_all">Todo</string>

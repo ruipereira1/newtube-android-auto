@@ -477,8 +477,8 @@
          default and keeps video on the car display while the car is moving; the switch turns it
          off. -->
     <string name="car_passenger_mode_off">Passenger mode is off. Turn it on to show video here.</string>
-    <string name="car_enable_passenger_mode">Turn on passenger mode</string>
-    <string name="car_disable_passenger_mode">Turn off passenger mode</string>
+    <string name="car_enable_passenger_mode">Show video</string>
+    <string name="car_disable_passenger_mode">Audio only</string>
     <string name="car_start_video">Start a video on your phone, or tap Menu to pick one here.</string>
     <string name="car_video_unavailable_title">Video unavailable</string>
     <string name="car_home_all">All</string>

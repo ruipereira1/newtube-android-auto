@@ -29,6 +29,16 @@ import java.io.File;
  * The work is {@link CarSetup} (the shell steps) and {@link CarUpdates} (GitHub releases).
  */
 public class CarSetupActivity extends MobileActivity {
+    /**
+     * Not part of ViewManager's back stack (it has no view mapping): as a back-stack screen its
+     * resume cleared that stack, so Back read "no parent" and sent the whole app to the
+     * background instead of returning to the You tab. See MobileActivity.isBackStackScreen.
+     */
+    @Override
+    protected boolean isBackStackScreen() {
+        return false;
+    }
+
     private static final int REQUEST_PERMISSIONS = 7301;
 
     private final Handler mMain = new Handler(Looper.getMainLooper());

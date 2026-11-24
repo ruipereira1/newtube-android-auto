@@ -25,7 +25,6 @@ import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.media3.common.Player;
 import androidx.media3.common.VideoSize;
-import androidx.media3.common.text.CueGroup;
 import androidx.media3.exoplayer.ExoPlayer;
 
 import com.liskovsoft.smartyoutubetv2.common.app.models.data.Video;
@@ -92,18 +91,6 @@ public class CarVideoScreen extends Screen implements SurfaceCallback {
     /** Refreshes in a row in which the player had nothing to play (error, ended live, ...). */
     private int mProblemTicks;
     private boolean mLastShowProblem;
-
-    /** The player whose subtitles the car screen shows, and the listener that forwards them. */
-    @Nullable
-    private Player mCuePlayer;
-    private final Player.Listener mCueListener = new Player.Listener() {
-        @Override
-        public void onCues(@NonNull CueGroup cueGroup) {
-            if (mLetterbox != null) {
-                mLetterbox.setCues(cueGroup.cues);
-            }
-        }
-    };
 
     private final Runnable mRefresh = new Runnable() {
         @Override
@@ -268,7 +255,6 @@ public class CarVideoScreen extends Screen implements SurfaceCallback {
         boolean playWhenReady = player != null && player.getPlayWhenReady();
         String videoId = video != null ? video.videoId : null;
         updateAspectRatio(player);
-        bindCues(player);
 
         // Two refreshes in a row (about two seconds), so the short idle moment while a new video
         // loads never flashes the message.
@@ -307,26 +293,8 @@ public class CarVideoScreen extends Screen implements SurfaceCallback {
         mHandler.removeCallbacks(mRefresh);
     }
 
-    /** Follows the current player's subtitles (the player changes with each new video). */
-    private void bindCues(@Nullable Player player) {
-        if (player == mCuePlayer) {
-            return;
-        }
-        if (mCuePlayer != null) {
-            mCuePlayer.removeListener(mCueListener);
-        }
-        mCuePlayer = player;
-        if (player != null) {
-            player.addListener(mCueListener);
-        }
-        if (mLetterbox != null) {
-            mLetterbox.setCues(player != null ? player.getCurrentCues().cues : null);
-        }
-    }
-
     private void destroy() {
         stopPolling();
-        bindCues(null);
         try {
             getCarContext().getCarService(AppManager.class).setSurfaceCallback(null);
         } catch (RuntimeException e) {
@@ -377,9 +345,6 @@ public class CarVideoScreen extends Screen implements SurfaceCallback {
                         public void onVideoSurfaceReady(@NonNull Surface videoSurface) {
                             mSurface = videoSurface;
                             updateAspectRatio(CarDisplayBridge.getPlayer());
-                            // A new letterbox starts empty: show the current lines at once.
-                            bindCues(null);
-                            bindCues(CarDisplayBridge.getPlayer());
                             if (mStarted) {
                                 attachSurface();
                             }

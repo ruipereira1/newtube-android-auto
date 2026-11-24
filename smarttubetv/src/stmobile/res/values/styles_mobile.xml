@@ -550,4 +550,10 @@
         <item name="android:layout_marginTop">8dp</item>
         <item name="android:background">@drawable/bg_skeleton_block</item>
     </style>
+    <!-- NEWTUBE(android-auto): the external video player (ExternalVideoActivity), black and edge to edge. -->
+    <style name="Theme.NewTube.ExternalPlayer" parent="Theme.NewTube">
+        <item name="android:windowBackground">@android:color/black</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="28">shortEdges</item>
+    </style>
 </resources>

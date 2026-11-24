@@ -222,6 +222,35 @@
             android:exported="false"
             android:foregroundServiceType="dataSync" />
 
+        <!--
+          NEWTUBE(android-auto): NewTube as an external video player, for apps such as Nuvio or
+          Stremio ("open in another player"). Plays on the phone, and on the car screen when
+          Android Auto shows NewTube. Matches only links that come with a video type, so web
+          links keep opening in the browser. Standard launch mode on purpose: the other app
+          starts it for a result (where playback stopped), which singleTask would cancel at once.
+        -->
+        <activity
+            android:name="com.newtube.mobile.external.ExternalVideoActivity"
+            android:exported="true"
+            android:label="@string/external_player_label"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|layoutDirection|keyboardHidden|uiMode"
+            android:screenOrientation="sensorLandscape"
+            android:theme="@style/Theme.NewTube.ExternalPlayer">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http" />
+                <data android:scheme="https" />
+                <data android:scheme="content" />
+                <data android:scheme="file" />
+                <data android:mimeType="video/*" />
+                <data android:mimeType="application/x-mpegURL" />
+                <data android:mimeType="application/vnd.apple.mpegurl" />
+                <data android:mimeType="application/dash+xml" />
+            </intent-filter>
+        </activity>
+
         <activity
             android:name="com.newtube.mobile.ui.update.MobileUpdateActivity"
             android:exported="false"

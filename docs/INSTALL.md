@@ -92,6 +92,24 @@ Done: **You → Android Auto** says **Ready**.
 
 *The pictures show the app in Portuguese; it follows your phone's language.*
 
+
+## Watch Nuvio or Stremio videos in the car
+
+NewTube is also an **external video player**: apps that can open a video in another player
+(Nuvio, Stremio and others) can send it to NewTube, and it shows on the car screen.
+
+1. In **Nuvio**: **Settings → Playback → External Player**, and turn it on. Turn on
+   **Forward Subtitles to External Player** too if you want subtitles.
+2. Pick a movie or episode. When Android asks which app to use, tap
+   **NewTube Auto (car screen)** and, if you like, **Always**.
+3. With NewTube open on the car screen, the video moves there. The phone shows
+   "Playing on the car screen".
+4. When you close the video (Back), Nuvio learns where you stopped, for "Continue watching".
+
+In the car, **Previous / Next** skip 10 seconds (these videos have no queue). To save mobile
+data the car asks sources that offer several qualities for 720p at most; a single file (an .mkv,
+say) always comes in the quality it has.
+
 ## NewTube does not appear in the car?
 
 - Check that **You → Android Auto** says **Ready**. If not, do Step 3.

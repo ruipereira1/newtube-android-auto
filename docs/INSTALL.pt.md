@@ -95,6 +95,23 @@ software; num Xiaomi toca na versão do MIUI/HyperOS.*
 - **Toque duplo do lado direito** avança 10 segundos; **do lado esquerdo** recua 10 segundos.
   Continua a tocar duas vezes para saltar mais (+20, +30 segundos...).
 
+## Ver vídeos da Nuvio ou da Stremio no carro
+
+O NewTube também funciona como **leitor externo**: as apps que deixam abrir um vídeo noutro
+leitor (Nuvio, Stremio e outras) podem mandá-lo para o NewTube, e ele aparece no ecrã do carro.
+
+1. Na **Nuvio**: **Definições → Reprodução → Leitor externo** e liga-o. Liga também
+   **Enviar legendas para o leitor externo**, se quiseres legendas.
+2. Escolhe um filme ou episódio. Quando o Android perguntar com que app abrir, toca em
+   **NewTube Auto (ecrã do carro)** e, se quiseres, em **Sempre**.
+3. Com o NewTube aberto no ecrã do carro, o vídeo passa para lá. No telemóvel fica a mensagem
+   "A reproduzir no ecrã do carro".
+4. Ao fechar o vídeo (botão Voltar), a Nuvio fica a saber onde paraste, para o "Continuar a ver".
+
+No carro, **Anterior / Seguinte** saltam 10 segundos (estes vídeos não têm fila). Para poupar
+dados móveis, o carro pede no máximo 720p às fontes que têm várias qualidades; um ficheiro
+único (por exemplo um .mkv) vem sempre na qualidade em que está.
+
 ## O NewTube não aparece no carro?
 
 - Confirma que em **Tu → Android Auto** aparece **Pronta**. Se não, faz o Passo 3.

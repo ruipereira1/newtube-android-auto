@@ -580,4 +580,6 @@
     <string name="car_guide_4_text">When the NewTube notification appears on top, tap Code and type the 6 digits. Leave the code window open.</string>
     <string name="car_guide_5_title">Tap Update</string>
     <string name="car_guide_5_text">Tap Update. If Google Play Protect asks, tap Scan app and then Install (if it warns about unknown apps, tap Continue). NewTube closes and comes back ready for Android Auto. Done: from now on updates take one tap.</string>
+    <string name="external_player_label">NewTube Auto (car screen)</string>
+    <string name="external_on_car">Playing on the car screen</string>
 </resources>

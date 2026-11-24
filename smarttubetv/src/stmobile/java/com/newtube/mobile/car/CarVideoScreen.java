@@ -29,6 +29,7 @@ import androidx.media3.exoplayer.ExoPlayer;
 
 import com.liskovsoft.smartyoutubetv2.common.app.models.data.Video;
 import com.liskovsoft.smartyoutubetv2.tv.R;
+import com.newtube.mobile.player.CarAudioSync;
 import com.newtube.mobile.player.CarVideoCap;
 import com.newtube.mobile.ui.playback.CarDisplayBridge;
 
@@ -456,6 +457,9 @@ public class CarVideoScreen extends Screen implements SurfaceCallback {
         if (mSurface != null && mSurface.isValid()) {
             // Fetch only what the car screen can show (at most 720p): saves mobile data.
             CarVideoCap.set(mSurfaceWidth, mSurfaceHeight);
+            // Sound and picture in step on the car (see CarAudioSync).
+            CarAudioSync.setDelayMs(CarModePrefs.getAudioDelayMs(getCarContext()));
+            CarAudioSync.setOnCar(true);
             CarDisplayBridge.attachCarSurface(mSurface);
         }
     }
@@ -464,7 +468,8 @@ public class CarVideoScreen extends Screen implements SurfaceCallback {
         if (mSurface != null) {
             CarDisplayBridge.detachCarSurface(mSurface);
         }
-        // Back on the phone: its own quality rules apply.
+        // Back on the phone: its own quality rules apply, and no sound correction.
         CarVideoCap.clear();
+        CarAudioSync.setOnCar(false);
     }
 }

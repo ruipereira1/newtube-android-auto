@@ -529,4 +529,7 @@
     <string name="car_guide_4_text">Cuando aparezca arriba la notificación de NewTube, toca Código y escribe los 6 dígitos. No cierres la ventana del código.</string>
     <string name="car_guide_5_title">Toca Actualizar</string>
     <string name="car_guide_5_text">Toca Actualizar. Si Google Play Protect lo pide, toca Analizar app y luego Instalar (si avisa de apps desconocidas, toca Continuar). NewTube se cierra y vuelve lista para Android Auto. Hecho: a partir de ahora las actualizaciones son un toque.</string>
+    <string name="car_audio_sync">Sincronizar el sonido</string>
+    <string name="car_audio_sync_off">Desactivado · toca si el sonido llega después de la imagen</string>
+    <string name="car_audio_sync_on">Imagen retrasada %d ms · toca para más</string>
 </resources>

@@ -152,17 +152,17 @@ public class CarVideoScreen extends Screen implements SurfaceCallback {
                         .addAction(showVideo)
                         .build();
             }
-            // Audio only: the sound keeps playing, so it must be possible to pause it from here.
-            // Menu moves to the corner (a message has room for two buttons).
+            // Audio only: the sound keeps playing, so it can be paused from here. Plain text
+            // buttons only: the same screen with an icon button and a corner Menu left the car
+            // screen black (the host could not draw it). The Menu has the switch to show video.
             boolean playing = audioPlayer.getPlayWhenReady();
-            return message(context.getString(R.string.car_passenger_mode_off))
-                    .addAction(action(playing ? R.drawable.ic_player_pause
-                                    : R.drawable.ic_player_play,
-                            context.getString(playing ? R.string.car_pause : R.string.car_play),
-                            CarDisplayBridge::togglePlayPause))
-                    .addAction(showVideo)
-                    .setActionStrip(new ActionStrip.Builder().addAction(menuAction(context))
+            return message(context.getString(R.string.car_audio_only))
+                    .addAction(new Action.Builder()
+                            .setTitle(context.getString(playing ? R.string.car_pause
+                                    : R.string.car_play))
+                            .setOnClickListener(CarDisplayBridge::togglePlayPause)
                             .build())
+                    .addAction(menuAction(context))
                     .build();
         }
 
